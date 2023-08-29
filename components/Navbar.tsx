@@ -12,6 +12,7 @@ export default function Navbar() {
         <img src="/logo.svg" className="h-12 ml-4" alt="" />
         <ul className="flex gap-4 mx-4">
           <li><Link href="/">Home</Link></li>
+          <li><Link href="/learn">Learn</Link></li>
 
           {session.data ? (
             <>

@@ -4,7 +4,7 @@ import { Quiz } from "@prisma/client";
 import { useEffect, useState } from "react";
 
 async function getItems() {
-  const result = await (await fetch(`${location.origin}/api/quiz`)).json() as Quiz[];
+  const result = await (await fetch(`${location.origin}/api/admin/quiz`)).json() as Quiz[];
   return result;
 }
 
@@ -41,9 +41,9 @@ export default function ListQuiz() {
       <table className="border border-collapse border-slate-400">
         <thead>
           <tr>
+            <th className="p-2 text-left border text-slate-200 border-slate-400 bg-slate-600" >Question</th>
             <th className="p-2 text-left border text-slate-200 border-slate-400 bg-slate-600" >Type</th>
             <th className="p-2 text-left border text-slate-200 border-slate-400 bg-slate-600" >Quiz</th>
-            <th className="p-2 text-left border text-slate-200 border-slate-400 bg-slate-600" >Question</th>
             <th className="p-2 text-left border text-slate-200 border-slate-400 bg-slate-600" >Answer</th>
           </tr>
         </thead>
