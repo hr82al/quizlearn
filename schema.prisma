@@ -10,6 +10,10 @@ datasource db {
  
 enum Quiz_Type {
   FILL
+  FILL_PART
+  RADIO
+  CHECK
+  ORDER
 }
 
 model Quiz {

@@ -70,7 +70,7 @@ export default function AddQuiz() {
       <textarea id="insert-answer" className="card-input" onChange={e => { setAnswer(e.target.value) }} />
       
       <div className="flex flex-row-reverse">
-        <button className="px-6 py-2 text-sm shadow-xl bg-sky-950 rounded-xl" onClick={handleClick}>
+        <button className="btn" onClick={handleClick}>
           Append
         </button>
       </div>
