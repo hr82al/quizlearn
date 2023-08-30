@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Quiz_Type } from "@prisma/client"
 import React, { useState } from "react";
 import Modal from "./Modal";
+import { json } from "stream/consumers";
 
 export interface CardInterface {
   id: number,
@@ -16,7 +17,33 @@ function splitToWords(text: string): string[] {
   return text.split(" ").filter(w => w.length > 0);
 }
 
-function checkFill(text1: string, text2: string) {
+
+/*
+An answer in a database can be in two variants
+1 - plain string 
+  "Some answer"
+2 - array encoded as a json in a plain string. And checker should output correct if user's answer is equal on of the variants
+  '["text1","text2"]' 
+ */
+function checkFill(usersAnswer: string, dbAnswer: string) {
+  console.log(dbAnswer)
+  try {
+    let tmp: string | string[];
+    tmp = JSON.parse(dbAnswer);
+    if (Array.isArray(tmp) && tmp.length > 0 && typeof tmp[0] === "string") {
+      for (const i of tmp) {
+        if (checkVariant(i, usersAnswer)) {
+          return true;
+        }
+      }
+    } 
+    return false;
+  } catch (error) {
+    return checkVariant(dbAnswer, usersAnswer);
+  }
+}
+
+function checkVariant(text1: string, text2: string) {
   const tmp1 = splitToWords(text1);
   const tmp2 = splitToWords(text2);
   if (tmp1.length != tmp2.length) {
@@ -53,6 +80,7 @@ function QuizFill() {
         type="text" 
         className="quiz-input" 
         placeholder="Input your answer"
+        autoComplete="off"
         onChange={(e) => {
           setAnswer(e.target.value)
         }}
