@@ -4,13 +4,13 @@ import type { Metadata } from 'next'
 import { Poppins } from 'next/font/google'
 import Providers from '@/components/providers';
 
-const poppins = Poppins({weight: "400", subsets: ['latin']});
+const poppins = Poppins({ weight: "400", subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Quiz Learn',
   description: 'Quiz application to learn typescript and other languages',
   keywords: 'learn, TS, typescript, quiz',
-  authors : {name: 'Alexandr Khromov'},
+  authors: { name: 'Alexandr Khromov' },
   creator: 'Alexandr Khromov',
 }
 
@@ -24,12 +24,12 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <Providers>
-        <body className={poppins.className + " relative"} >
+      <body className={poppins.className + " relative"} >
+        <Providers>
           <Navbar />
           {children}
-        </body>
-      </Providers>
+        </Providers>
+      </body>
     </html>
   )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { Quiz } from "@prisma/client"
+import { Quiz, Quiz_Type } from "@prisma/client"
 import { useEffect, useState } from "react";
 
 export interface CardInterface {
@@ -14,25 +14,35 @@ async function getQuiz(id: number) {
   return quiz;
 }
 
-export default function Card({id}: {id: number}) {
+function QuizFill({ quiz }: {quiz: Quiz}) {
+  return (
+    <>
+    <div className="mx-4 card-question" >
+      {quiz.question}
+    </div>
+  </>
+  )
+}
+
+export default function Card({ id }: { id: number }) {
   const [quiz, setQuiz] = useState<Quiz>();
-  
+
   useEffect(() => {
     getQuiz(id).then(q => {
       setQuiz(q);
     });
-  },[]);
+  }, []);
+
+  let quiz_body: React.ReactElement | null = null;
+  switch (quiz?.quiz_type) {
+    case Quiz_Type.FILL:
+      quiz_body = <QuizFill quiz={quiz}/>
+      break;
+  }
 
   return (
-    <div className="container p-4 mx-auto card bg-cyan-700 rounded-3xl">
-      <div className="card-question" >
-        {
-          quiz && (
-            <p>{JSON.stringify(quiz)}</p>
-          )
-        }
-       
-      </div>
+    <div className="container p-4 mx-auto card bg-sky-800 rounded-3xl">
+      {quiz_body}
     </div>
   )
 }
