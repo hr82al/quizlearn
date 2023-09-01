@@ -13,15 +13,21 @@ export default function Navbar() {
         <ul className="flex gap-4 mx-4">
           <li><Link href="/">Home</Link></li>
           <li><Link href="/learn">Learn</Link></li>
-
-          {session.data ? (
-            <>
+          { typeof session.data?.user?.name === "string" && session.data?.user.name === "admin" ? (
+              <>
               <li><Link href="/admin/quiz_list">Quizzes list</Link></li>
               <li><Link href="/admin/quiz">Quiz</Link></li>
-              <Link href="#" onClick={() => signOut()}>Sign Out</Link>
+              
             </>
+          ) : ("")
+          }
+          {session.data ? (
+              <Link href="#" onClick={() => signOut()}>Logout</Link>
           ) : (
-            <Link href="#" onClick={() => signIn()}>Sign In</Link>
+            <>
+              <Link href="/register">Register</Link>
+              <Link href="#" onClick={() => signIn()}>Login</Link>
+            </>
           )}
           <li>{session.data?.user?.name}</li>
         </ul>

@@ -30,7 +30,11 @@
   }
 
   .btn {
-    @apply px-6 py-2 text-sm shadow-xl bg-sky-950 rounded-xl
+    @apply px-6 py-2 text-sm shadow-xl bg-sky-950 rounded-xl hover:bg-violet-950 disabled:bg-gray-700 
+  }
+
+  .btn:active {
+    transform: scale(0.9);
   }
 
   .quiz-space {
