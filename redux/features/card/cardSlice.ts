@@ -16,7 +16,7 @@ export interface CardI {
 
 const initialState: CardI = {
   cards: [],
-  pos: 0,
+  pos: 2,
   startDb: 0,
   state: "CARD",
 };
@@ -57,7 +57,8 @@ export const cardSlice = createSlice({
 
     setCardState: (state, action: PayloadAction<CardState>) => {
       state.state = action.payload;
-    }
+    },
+
   },
 
 });
