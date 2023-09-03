@@ -29,7 +29,7 @@ export default function Navbar() {
               <Link href="#" onClick={() => signIn()}>Login</Link>
             </>
           )}
-          <li>{session.data?.user?.name}</li>
+          <li className="text-teal-200">{session.data?.user?.name}</li>
         </ul>
       </nav>
     </>

@@ -1,7 +1,8 @@
 "use client"
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, MouseEventHandler, useEffect, useState } from "react";
 import { hashSync } from "bcrypt-ts";
+import { signIn } from "next-auth/react";
 
 const log = console.log;
 export default function Register() {
@@ -60,7 +61,12 @@ export default function Register() {
       }
     ));
     if (register !== null) {
-      log(register);
+      signIn("credentials", {
+        username: user,
+        password: password,
+        redirect: true,
+        callbackUrl: "/",
+      })
     }
   }
 

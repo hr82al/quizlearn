@@ -8,7 +8,7 @@ datasource db {
   // directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
  
-enum Quiz_Type {
+enum QuizType {
   FILL
   FILL_PART
   RADIO
@@ -17,15 +17,18 @@ enum Quiz_Type {
 }
 
 model Quiz {
-  id        Int      @id @default(autoincrement())
-  question  String   @unique
-  quiz_type Quiz_Type
-  quiz      String   
-  answer    String
+  id           Int       @id @default(autoincrement())
+  question     String    @unique
+  quizType     QuizType  
+  quiz         String   
+  answer       String
+  category     String    @db.VarChar(10) 
 }
 
 model User {
   id           Int       @id @default(autoincrement())
-  name         String    @unique
-  bcrypt_hash  String
+  name         String    @unique @db.VarChar(25)
+  bcryptHash   String    @db.Char(60)
+  createdAt    DateTime  @default(now())
+  email        String?   @db.VarChar(64)
 }

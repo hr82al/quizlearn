@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       const result = await prisma.user.create({
         data: {
           name: req.name,
-          bcrypt_hash: req.bcrypt_hash,
+          bcryptHash: req.bcrypt_hash,
         }
       });
       return NextResponse.json(result, { status: 200});

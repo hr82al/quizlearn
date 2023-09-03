@@ -104,3 +104,48 @@ Array.prototype.shuffle = function() {
 Array.prototype.count = function(element) {
   return this.filter(e => e === element).length;
 }
+
+function splitToWords(text: string): string[] {
+  return text.split(" ").filter(w => w.length > 0);
+}
+
+function checkVariant(text1: string, text2: string) {
+  const tmp1 = splitToWords(text1);
+  const tmp2 = splitToWords(text2);
+  if (tmp1.length != tmp2.length) {
+    return false;
+  }
+  for (let i = 0; i < tmp1.length; i++) {
+    if (tmp1[i] !== tmp2[i]) {
+      return false;
+    } 
+  }
+  return true;
+}
+
+
+/*
+An answer in a database can be in two variants
+1 - plain string 
+  "Some answer"
+2 - array encoded as a json in a plain string. And checker should output correct if user's answer is equal on of the variants
+  '["text1","text2"]' 
+ */
+export function checkFill(usersAnswer: string, dbAnswer: string) {
+  console.log(dbAnswer)
+  try {
+    let tmp: string | string[];
+    tmp = JSON.parse(dbAnswer);
+    if (Array.isArray(tmp) && tmp.length > 0 && typeof tmp[0] === "string") {
+      for (const i of tmp) {
+        if (checkVariant(i, usersAnswer)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  } catch (error) {
+    return checkVariant(dbAnswer, usersAnswer);
+  }
+}
+

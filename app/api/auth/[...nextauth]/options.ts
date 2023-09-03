@@ -1,9 +1,14 @@
-import type { NextAuthOptions } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import type { Account, NextAuthOptions, Profile, User } from "next-auth";
+import Credentials, { CredentialInput } from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts"
 import { decode } from "base32"
+import GoogleProvider from "next-auth/providers/google"
+import { AdapterUser } from "next-auth/adapters";
+import { PrismaClient } from "@prisma/client";
 
-const log = console.log;
+
+const prisma = new PrismaClient();
+
 
 async function getUserHash(user:string) {
   const result = await (await fetch(
@@ -16,8 +21,8 @@ async function getUserHash(user:string) {
       body: JSON.stringify({name: user}),
     }
   )).json();
-  if (typeof result.bcrypt_hash === "string") {
-    return result as { id: number, name: string, bcrypt_hash: string };
+  if (typeof result.bcryptHash === "string") {
+    return result as { id: number, name: string, bcryptHash: string };
   } else {
     return null;
   }
@@ -25,6 +30,11 @@ async function getUserHash(user:string) {
 
 export const options: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID as string,
+      clientSecret: process.env.GOOGLE_SECRET as string,
+    }),
+
     Credentials({
       credentials: {
         username: { label: "Username" },
@@ -43,8 +53,11 @@ export const options: NextAuthOptions = {
             if (user === null) {
               return null;
             }
-            if (compareSync(credentials.password, user.bcrypt_hash)) {
-              return user;
+            if (compareSync(credentials.password, user.bcryptHash)) {
+              return {
+                id: String(user.id),
+                name: user.name,
+              }
             }
           }
         }       
@@ -52,4 +65,31 @@ export const options: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    async signIn(
+      params: {
+        user: User | AdapterUser
+        account: Account | null
+        profile?: Profile
+        email?: {
+          verificationRequest?: boolean
+        }
+        credentials?: Record<string, CredentialInput>
+      }) {
+        if (typeof params.user.email === "string" && typeof params.user.name === "string"){
+          try {
+            await prisma.user.create({
+              data: {
+                name: params.user.name,
+                bcryptHash: "",
+                email: params.user.email,
+              }
+            })
+          } catch (error) {
+            
+          }
+        }
+      return true;
+    }
+  }
 }
