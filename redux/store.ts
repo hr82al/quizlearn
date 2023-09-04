@@ -2,6 +2,7 @@ import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit";
 import cardReducer, { cardSlice } from "./features/card/cardSlice";
 import plateReducer, { plateSlice } from "./features/plate/plateSlice";
 
+
 export const store = configureStore({
   reducer: {
     [cardSlice.name]: cardReducer,

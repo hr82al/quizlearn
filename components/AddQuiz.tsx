@@ -1,11 +1,11 @@
 'use client'
 
 import { QuizT } from '@/app/api/admin/quiz/route';
-import { Quiz_Type, Quiz } from '@prisma/client';
+import { QuizEnum, Quiz } from '@prisma/client';
 import { useState } from 'react';
 
 
-const quiz_types = Object.keys(Quiz_Type);
+const quiz_types = Object.keys(QuizEnum);
 
 async function createQuiz(quiz: QuizT) {
   const response  = await (await fetch(
@@ -24,7 +24,7 @@ async function createQuiz(quiz: QuizT) {
 export default function AddQuiz() {
  
   const [question, setQuestion] = useState("");
-  const [quiz_type, setQuiz_type] = useState<Quiz_Type>("FILL");
+  const [quiz_type, setQuiz_type] = useState<QuizEnum>("FILL");
   const [quiz, setQuiz] = useState("");
   const [answer, setAnswer] = useState("");
 
@@ -55,7 +55,7 @@ export default function AddQuiz() {
       <label htmlFor="insert-quiz-type" className="block ml-3">
         Quiz type:
       </label>
-      <select className="w-24 card-input" id="insert-quiz-type" onChange={e => { setQuiz_type(e.target.value as Quiz_Type) }}>
+      <select className="w-24 card-input" id="insert-quiz-type" onChange={e => { setQuiz_type(e.target.value as QuizEnum) }}>
         {selections}
       </select>
 

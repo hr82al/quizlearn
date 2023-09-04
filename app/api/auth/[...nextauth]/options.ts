@@ -4,10 +4,9 @@ import { compareSync } from "bcrypt-ts"
 import { decode } from "base32"
 import GoogleProvider from "next-auth/providers/google"
 import { AdapterUser } from "next-auth/adapters";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/components/prisma";
 
 
-const prisma = new PrismaClient();
 
 
 async function getUserHash(user:string) {
@@ -42,26 +41,26 @@ export const options: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (typeof credentials?.password === "string" && typeof process.env.BCRYPT_HASH === "string") {
-          const user = { id: "1", name: "admin"};
-          const hash = decode(process.env.BCRYPT_HASH);
-          const isPasswordValid = compareSync(credentials.password, hash);
-          if (credentials?.username === user.name && isPasswordValid) {
-            return user
+          if (credentials?.username === "admin" && compareSync(credentials.password, decode(process.env.BCRYPT_HASH))) {
+            return {
+              id: "0",
+              name: "admin",
+              email: "hr82al@gmail.com"
+            };
           }
-          if (typeof credentials?.password === "string") {
-            const user = await getUserHash(credentials.username);
-            if (user === null) {
-              return null;
-            }
-            if (compareSync(credentials.password, user.bcryptHash)) {
-              return {
-                id: String(user.id),
-                name: user.name,
-              }
+
+          const user = await getUserHash(credentials.username);
+          if (user === null) {
+            return null;
+          }
+          if (compareSync(credentials.password, user.bcryptHash)) {
+            return {
+              id: String(user.id),
+              name: user.name
             }
           }
-        }       
-          return null;
+        }
+        return null;
       },
     }),
   ],

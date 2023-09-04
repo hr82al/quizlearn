@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/components/prisma";
 import { NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
 
 
 export async function POST(request: Request) {

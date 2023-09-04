@@ -45,7 +45,7 @@ export default function QuizOrder() {
       answer: currentCard.answer,
       quiz: currentCard.quiz,
     }));
-  }, [currentCard.answer]);
+  }, [currentCard.answer, currentCard.quiz]);
 
   return (
     <div>

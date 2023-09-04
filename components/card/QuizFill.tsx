@@ -1,8 +1,7 @@
 import { changeCardStateAsync, selectCurrentCard, setCardState } from "@/redux/features/card/cardSlice";
 import { checkFill } from "@/redux/features/card/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { JetBrains_Mono } from "next/font/google";
-import { useState } from "react";
+import { KeyboardEvent, useState } from "react";
 
 
 export default function QuizFill() {
@@ -19,6 +18,12 @@ export default function QuizFill() {
     dispatch(changeCardStateAsync());
   }
 
+  function handleEnter(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
+  }
+
   return (
     <>
     <div className="mx-4 card-question" >
@@ -28,9 +33,11 @@ export default function QuizFill() {
         className="quiz-input "
         placeholder="Input your answer"
         autoComplete="off"
+        autoFocus={true}
         onChange={(e) => {
           setAnswer(e.target.value)
         }}
+        onKeyDown={handleEnter}
       />
     </div>
     <button 

@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react";
 
 const NOT_LETTERS = "!@#$%^&*()_-+={}[:;\"'\\|,.<>/?]"
 const NOT_LETTERS_R = /[!@#$%^&*()_={}[:;\"'\\|,.<>/?\]+-]/
@@ -132,7 +133,6 @@ An answer in a database can be in two variants
   '["text1","text2"]' 
  */
 export function checkFill(usersAnswer: string, dbAnswer: string) {
-  console.log(dbAnswer)
   try {
     let tmp: string | string[];
     tmp = JSON.parse(dbAnswer);
@@ -149,3 +149,7 @@ export function checkFill(usersAnswer: string, dbAnswer: string) {
   }
 }
 
+export function useIsAdmin() {
+  const session = useSession();
+  return session.data?.user?.email === "hr82al@gmail.com";
+}

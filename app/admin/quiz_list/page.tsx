@@ -18,7 +18,7 @@ export default function ListQuiz() {
           {e.question}
         </td>
         <td className="p-2 border bg-sky-950 border-slate-400">
-          {e.quiz_type}
+          {e.quizType}
         </td>
         <td className="p-2 border bg-sky-950 border-slate-400">
           {e.quiz}

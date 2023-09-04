@@ -26,7 +26,6 @@ export default function RootLayout({
       </head>
       <body className={poppins.className + " relative"} >
         <Providers>
-          <Navbar />
           {children}
         </Providers>
       </body>

@@ -1,14 +1,15 @@
 "use client"
 
-import { selectCardState, selectCurrentCard } from "@/redux/features/card/cardSlice";
-import { useAppSelector } from "@/redux/hooks";
-import { QuizType } from "@prisma/client"
+import { initCardAsync, resetCards, selectCardState, selectCurrentCard, selectIsCorrect } from "@/redux/features/card/cardSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { QuizEnum } from "@prisma/client"
 import Modal from "./Modal";
 import { JetBrains_Mono } from "next/font/google";
 import QuizOrder from "./QuizOrder";
 import QuizFill from "./QuizFill";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-//const log = console.log;
  
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
 
@@ -16,16 +17,30 @@ const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
 export default function Card() {
   const currentCard = useAppSelector(selectCurrentCard);
   const cardState = useAppSelector(selectCardState);
-
+  const isCorrect = useAppSelector(selectIsCorrect);
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  
   let quiz_body: React.ReactNode = <div></div>
   switch (currentCard?.quizType) {
-    case QuizType.FILL:
+    case QuizEnum.FILL:
       quiz_body = <QuizFill />
       break;
-    case QuizType.ORDER:
+    case QuizEnum.ORDER:
       quiz_body = <QuizOrder />
       break;
   }
+
+  useEffect(() => {
+    if (cardState === "FINISHED") {
+      dispatch(resetCards());
+      dispatch(initCardAsync());
+      router.push("/");
+      //dispatch(setCardState("CARD"));
+      //preload next cards
+
+    }
+  }, [cardState]);
 
   let card_body: React.ReactNode = <div></div>
   switch (cardState) {
@@ -40,10 +55,27 @@ export default function Card() {
       );
       break;
     case "OK":
-      card_body = <Modal>OK</Modal>
+      card_body = (
+        <Modal>
+          <div>
+            {isCorrect.filter(c => c === true).length} / {isCorrect.length}
+          </div>
+          <div>
+            Correct!
+          </div>
+        </Modal>
+      );
       break;
     case "NOK":
-      card_body = <Modal>NOK</Modal>
+      card_body = (
+        <Modal>
+          <div>
+            {isCorrect.filter(c => c === true).length} / {isCorrect.length}
+          </div>
+          <div>
+            Wrong!
+          </div>
+        </Modal>);
       break;
   }
 
