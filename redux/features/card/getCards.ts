@@ -3,7 +3,10 @@ import { CategoryEnum, Quiz } from "@prisma/client";
 const NUMBER_PRELOADED_QUIZZES = 5;
 
 export async function getCards(categories: CategoryEnum[]) {
-  //const quiz: Quiz[] = await ( await fetch(`${location.origin}/api/quiz?start=${start_db}&end=${end}`)).json() as Quiz[];
+  if (categories.length === 0) {
+    return [];
+  }
+
   const quiz: Quiz[] = await ( await fetch(
     `${location.origin}/api/quiz`,
     {

@@ -13,8 +13,9 @@ export default function Navbar() {
     <>
       <nav className="flex items-center justify-between w-full h-16 mb-4 bg-sky-900"
       >
-        <Image src="/logo.svg" className="h-12 ml-4" alt="" />
+        <Image src="/logo.svg" width={48} height={48} className="ml-4" alt="" />
         <ul className="flex gap-4 mx-4">
+          <li><Link href="/">Home</Link></li>
           <li><Link href="/learn">learn</Link></li>
           {isAdmin ? (
             <>

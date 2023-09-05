@@ -1,4 +1,6 @@
+import { CategoryEnum } from "@prisma/client";
 import { useSession } from "next-auth/react";
+import { log } from "@/components/prisma";
 
 const NOT_LETTERS = "!@#$%^&*()_-+={}[:;\"'\\|,.<>/?]"
 const NOT_LETTERS_R = /[!@#$%^&*()_={}[:;\"'\\|,.<>/?\]+-]/

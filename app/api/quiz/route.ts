@@ -1,8 +1,6 @@
-import { prisma } from "@/components/prisma";
+import { log, prisma } from "@/components/prisma";
 import { CategoryEnum, Quiz } from "@prisma/client";
 import { NextResponse } from "next/server";
-
-const log = console.log;
 
 
 function isNumber(value: string | null): boolean {
@@ -54,9 +52,12 @@ function isCategoryRes(v: any): v is CategoriesReq {
 export async function POST(request: Request) {
   try {
     const json = await request.json();
+    log(json);
+    log(isCategoryRes(json))
     if (isCategoryRes(json)) {
       const query = (`SELECT * FROM public."Quiz" WHERE category IN (${json.categories.map(c => `'${c}'`)}) ORDER BY RANDOM() LIMIT ${json.num}`);
       const result = await prisma.$queryRawUnsafe<Quiz[]>(query);
+      log(result)
       return NextResponse.json(result, { status: 200 });
     }
     return NextResponse.json( {}, { status: 500 });

@@ -26,7 +26,7 @@ export default function QuizFill() {
 
   return (
     <>
-    <div className="mx-4 card-question" >
+    <div className="card-question" >
       <input 
         name="quiz-input"
         type="text" 

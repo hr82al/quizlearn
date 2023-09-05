@@ -1,6 +1,6 @@
 "use client"
 
-import { initCardAsync, resetCards, selectCardState, selectCurrentCard, selectIsCorrect } from "@/redux/features/card/cardSlice";
+import { initCardAsync, selectCardState, selectCurrentCard, selectIsCorrect } from "@/redux/features/card/cardSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { QuizEnum } from "@prisma/client"
 import Modal from "./Modal";
@@ -9,6 +9,7 @@ import QuizOrder from "./QuizOrder";
 import QuizFill from "./QuizFill";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Navbar from "../Navbar";
 
  
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -33,12 +34,8 @@ export default function Card() {
 
   useEffect(() => {
     if (cardState === "FINISHED") {
-      dispatch(resetCards());
       dispatch(initCardAsync());
       router.push("/");
-      //dispatch(setCardState("CARD"));
-      //preload next cards
-
     }
   }, [cardState]);
 
@@ -46,7 +43,7 @@ export default function Card() {
   switch (cardState) {
     case "CARD":
       card_body = (
-        <div className="container p-4 mx-auto card bg-sky-800 rounded-3xl">
+        <div className="container p-4 mx-auto card bg-sky-800 rounded-xl">
           <div className={"mb-2 " + jetBrainFont.className}>
             {currentCard?.question}
           </div>
@@ -79,5 +76,11 @@ export default function Card() {
       break;
   }
 
-  return card_body;
+  return (
+    <>
+      <Navbar />
+      {card_body}
+    </>
+  );
+  ;
 }
