@@ -1,6 +1,4 @@
-import { CategoryEnum } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import { log } from "@/components/prisma";
 
 const NOT_LETTERS = "!@#$%^&*()_-+={}[:;\"'\\|,.<>/?]"
 const NOT_LETTERS_R = /[!@#$%^&*()_={}[:;\"'\\|,.<>/?\]+-]/
@@ -154,4 +152,22 @@ export function checkFill(usersAnswer: string, dbAnswer: string) {
 export function useIsAdmin() {
   const session = useSession();
   return session.data?.user?.email === "hr82al@gmail.com";
+}
+
+export async function getUser(user:string | null | undefined, email: null | string = null) {
+  if (user === null || user === undefined) {
+    return null;
+  }
+  const host = process.env.NEXTAUTH_URL ?? ""
+  const result = await (await fetch(
+    `${host}/api/register`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({name: user, email: email}),
+    }
+  )).json();
+    return result as { id: number, name: string, bcryptHash: string, email: string };
 }

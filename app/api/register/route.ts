@@ -14,10 +14,11 @@ export async function POST(request: Request) {
       });
       return NextResponse.json(result, { status: 200});
     }
-    if ("name" in req) {
+    if ("name" in req && "email" in req) {
       const result = await prisma.user.findFirst({
         where: {
           name: req.name,
+          email: req.email,
         }
       });
       return NextResponse.json(result, { status: 200});

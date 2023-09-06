@@ -1,11 +1,11 @@
 "use client"
 
 import Navbar from "@/components/Navbar";
-import { log } from "@/components/prisma";
 
-import { initCardAsync, selectCategories, setCategoryAsync, selectCategoriesChecked } from "@/redux/features/card/cardSlice";
+import { initCardAsync, selectCategories, selectCategoriesChecked, selectCards, selectIsCorrect, resetCards, setUserId, setCategory } from "@/redux/features/card/cardSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { CategoryEnum } from "@prisma/client";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {  useEffect, useState } from "react";
 
@@ -16,14 +16,13 @@ function Category({ category, idx }: { category: CategoryEnum, idx: number }) {
   const dispatch = useAppDispatch();
   const [checked, setChecked] = useState(categoriesChecked[categories.indexOf(category)]);
 
-  
   function handleCheck(b: boolean) {
     setChecked(b);
   }
 
   useEffect(() => {
-   // dispatch(addCategory({category: category, checked: checked}));
-    dispatch(setCategoryAsync(category, checked));
+    dispatch(resetCards());
+    dispatch(setCategory({ category: category, checked: checked}))
     dispatch(initCardAsync());
   }, [checked]);
 
@@ -44,13 +43,22 @@ function Category({ category, idx }: { category: CategoryEnum, idx: number }) {
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const categories = useAppSelector(selectCategories);
+  const cards = useAppSelector(selectCards);
+  const isCorrect = useAppSelector(selectIsCorrect);
   const router = useRouter();
+  const { data: session } = useSession();
 
-/*   useEffect(() => {
-    log("init")
-    dispatch(initCardAsync());
-  },[]); */
+  useEffect(() => {
+    if (typeof session?.user.id === "number") {
+      dispatch(setUserId(session.user.id));
+    }
+  },[]);
+
+  useEffect(() => {
+    if (cards.cards.length === isCorrect.length) {
+      dispatch(resetCards());
+    }
+  },[]);
   
   return (
     <>
@@ -84,7 +92,9 @@ export default function Home() {
         <h2 className="text-2xl text-center text-orange-300 my-3">
             Work with errors.
           </h2>
-
+          <div className="border-gray-100 border rounded-md p-4 grid grid-cols-3 gap-4 md:grid-cols-6 mb-4">
+            <p>some</p>
+          </div>
         </div>
 
       </main>

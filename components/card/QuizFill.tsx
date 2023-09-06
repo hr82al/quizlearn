@@ -10,7 +10,8 @@ export default function QuizFill() {
   const dispatch = useAppDispatch();
 
   function handleSubmit() {
-    if (checkFill(answer, quiz.answer)) {    
+    const isCorrect = checkFill(answer, quiz.answer);
+    if (isCorrect) {    
       dispatch(setCardState("OK"));
     } else {
       dispatch(setCardState("NOK"));

@@ -37,3 +37,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 pg_dump -U user -d quizlearn -h 192.168.31.216 -a -E UTF-8 --table='public."Quiz"' > ~/docs/workspace/react/dump
 
 psql -U user -d quizlearn -h 192.168.31.216 < ~/docs/workspace/react/dump
+psql -U default -d verceldb -h ep-withered-darkness-13288563-pooler.eu-central-1.postgres.vercel-storage.com < ~/docs/workspace/react/dump

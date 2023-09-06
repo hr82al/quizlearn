@@ -39,7 +39,7 @@ export default function Register() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({name: user}),
+        body: JSON.stringify({name: user, email: null}),
       }
       )).json();
     if (name !== null) {

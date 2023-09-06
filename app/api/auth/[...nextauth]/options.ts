@@ -1,31 +1,12 @@
-import type { Account, NextAuthOptions, Profile, User } from "next-auth";
 import Credentials, { CredentialInput } from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts"
 import { decode } from "base32"
 import GoogleProvider from "next-auth/providers/google"
 import { AdapterUser } from "next-auth/adapters";
 import { prisma } from "@/components/prisma";
+import { Account, NextAuthOptions, Profile, User } from "next-auth";
+import { getUser } from "@/redux/features/card/utils";
 
-
-
-
-async function getUserHash(user:string) {
-  const result = await (await fetch(
-    `${process.env.NEXTAUTH_URL}/api/register`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({name: user}),
-    }
-  )).json();
-  if (typeof result.bcryptHash === "string") {
-    return result as { id: number, name: string, bcryptHash: string };
-  } else {
-    return null;
-  }
-}
 
 export const options: NextAuthOptions = {
   providers: [
@@ -33,6 +14,7 @@ export const options: NextAuthOptions = {
       clientId: process.env.GOOGLE_ID as string,
       clientSecret: process.env.GOOGLE_SECRET as string,
     }),
+
 
     Credentials({
       credentials: {
@@ -48,15 +30,15 @@ export const options: NextAuthOptions = {
               email: "hr82al@gmail.com"
             };
           }
-
-          const user = await getUserHash(credentials.username);
+          const user = await getUser(credentials.username);
           if (user === null) {
             return null;
           }
           if (compareSync(credentials.password, user.bcryptHash)) {
             return {
               id: String(user.id),
-              name: user.name
+              name: user.name,
+              email: user.email,
             }
           }
         }
@@ -64,6 +46,8 @@ export const options: NextAuthOptions = {
       },
     }),
   ],
+
+
   callbacks: {
     async signIn(
       params: {
@@ -85,10 +69,18 @@ export const options: NextAuthOptions = {
               }
             })
           } catch (error) {
-            
           }
         }
       return true;
-    }
+    },
+
+    async session({ session, user, token}) {
+      const tmp = (await getUser(session.user.name, session.user.email));
+      if (typeof tmp?.id === "number") {
+        session.user.id = tmp.id;
+      }
+      return session;
+    },
+
   }
 }
