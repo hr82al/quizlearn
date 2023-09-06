@@ -1,6 +1,7 @@
 "use client"
 
 import Navbar from "@/components/Navbar";
+import Results from "@/components/results";
 
 import { initCardAsync, selectCategories, selectCategoriesChecked, selectCards, selectIsCorrect, resetCards, setUserId, setCategory } from "@/redux/features/card/cardSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -93,7 +94,7 @@ export default function Home() {
             Work with errors.
           </h2>
           <div className="border-gray-100 border rounded-md p-4 grid grid-cols-3 gap-4 md:grid-cols-6 mb-4">
-            <p>some</p>
+            <Results />
           </div>
         </div>
 

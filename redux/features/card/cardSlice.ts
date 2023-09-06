@@ -90,7 +90,6 @@ export const changeCardStateAsync = (): AppThunk =>
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          [Prisma.ResultScalarFieldEnum.userId]: userId,
           [Prisma.ResultScalarFieldEnum.quizId]: card.id, 
           [Prisma.ResultScalarFieldEnum.isCorrect]: isCorrect}),
       });
