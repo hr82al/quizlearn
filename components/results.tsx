@@ -18,7 +18,7 @@ export default function Results() {
       {
         result?.map((e, k) => {
           return (
-            <div>
+            <div key={k}>
               {e.isCorrect ? ("✅") : ("❌")}
             </div>
           );

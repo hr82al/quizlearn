@@ -1,3 +1,4 @@
+import { log } from "@/components/prisma";
 import { useSession } from "next-auth/react";
 
 const NOT_LETTERS = "!@#$%^&*()_-+={}[:;\"'\\|,.<>/?]"
@@ -111,8 +112,10 @@ function splitToWords(text: string): string[] {
 }
 
 function checkVariant(text1: string, text2: string) {
+  log(`res : ${text1} : ${text2}`)
   const tmp1 = splitToWords(text1);
   const tmp2 = splitToWords(text2);
+  log(`res : ${tmp1} : ${tmp2}`)
   if (tmp1.length != tmp2.length) {
     return false;
   }
@@ -133,14 +136,12 @@ An answer in a database can be in two variants
   '["text1","text2"]' 
  */
 export function checkFill(usersAnswer: string, dbAnswer: string) {
+  
   try {
-    let tmp: string | string[];
-    tmp = JSON.parse(dbAnswer);
-    if (Array.isArray(tmp) && tmp.length > 0 && typeof tmp[0] === "string") {
-      for (const i of tmp) {
-        if (checkVariant(i, usersAnswer)) {
-          return true;
-        }
+    let tmp = JSON.parse(dbAnswer) as string[];
+    for (const i of tmp) {
+      if (checkVariant(i, usersAnswer)) {
+        return true;
       }
     }
     return false;

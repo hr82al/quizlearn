@@ -41,13 +41,6 @@ export const initCardAsync = (): AppThunk =>
       dispatch(setCards(await getCards(checked)));
   };
 
-/*   export const setCategoryAsync = (category: CategoryEnum, checked: boolean): AppThunk => 
-    async (dispatch) => {
-      dispatch(setCategory({
-        category: category,
-        checked: checked
-      }));
-    }; */
 
 export const changeCardStateAsync = (): AppThunk =>
   async (dispatch, getState) => {
@@ -94,16 +87,6 @@ export const changeCardStateAsync = (): AppThunk =>
           [Prisma.ResultScalarFieldEnum.isCorrect]: isCorrect}),
       });
     }
-
-
-/* export const initIdAsync = (name: string | null | undefined, email: string | null | undefined): AppThunk => 
-async (dispatch, getState) => {
-  if (typeof name === "string" && email !== undefined) {
-    const user = await getUser(name, email)
-    const id = user?.id ?? -1;
-    dispatch(setUserId(id));
-  }
-} */
 
 
 export const cardSlice = createSlice({

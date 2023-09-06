@@ -24,6 +24,7 @@ async function runProtectByUserId(fn: (userId: number) => Promise<ResultT>) {
 export async function POST(request: Request) {
   return await runProtectByUserId(async (userId) => {
     const req = await request.json();
+    log(JSON.stringify(req))
     if (
       Prisma.ResultScalarFieldEnum.quizId in req &&
       Prisma.ResultScalarFieldEnum.isCorrect in req
@@ -43,7 +44,6 @@ export async function POST(request: Request) {
 
 export async function GET() {
   return await runProtectByUserId(async (userId) => {
-    log("userId:" + userId)
     const result = await prisma.result.findMany({
       where: {
         userId: userId,
