@@ -92,10 +92,8 @@ export default function Home() {
         <div>
         <h2 className="text-2xl text-center text-orange-300 my-3">
             Work with errors.
-          </h2>
-          <div className="border-gray-100 border rounded-md p-4 grid grid-cols-3 gap-4 md:grid-cols-6 mb-4">
+        </h2>
             <Results />
-          </div>
         </div>
 
       </main>
