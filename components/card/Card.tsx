@@ -9,7 +9,6 @@ import QuizOrder from "./QuizOrder";
 import QuizFill from "./QuizFill";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Navbar from "../Navbar";
 
  
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -76,11 +75,6 @@ export default function Card() {
       break;
   }
 
-  return (
-    <>
-      <Navbar />
-      {card_body}
-    </>
-  );
+  return card_body;
   ;
 }

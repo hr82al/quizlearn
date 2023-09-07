@@ -29,7 +29,7 @@ function Category({ category, idx }: { category: CategoryEnum, idx: number }) {
 
   const hId = `category-check-${idx}`
   return (
-    <div className="bg-purple-950 px-3 py-1 rounded-md">
+    <div className="px-3 py-1 rounded-md bg-purple-950">
       <label htmlFor={hId}>
         <input id={hId} name={hId} type="checkbox"
           checked={checked}
@@ -64,38 +64,33 @@ export default function Home() {
   return (
     <>
       <header>
-        <Navbar />
+        <Navbar>
+        </Navbar>
       </header>
-      <main className="container bg-sky-800 rounded-sm p-4 mx-auto">
+      <main className="container p-4 mx-auto rounded-sm bg-sky-800">
         <div>
-          <h2 className="text-2xl text-center text-orange-300 my-3">
+          <h2 className="my-3 text-2xl text-center text-orange-300">
             Select the categories you want to learn.
           </h2>
-          <div className="border-gray-100 border rounded-md p-4 grid grid-cols-3 gap-4 md:grid-cols-6 mb-4">
+          <div className="grid grid-cols-3 gap-4 p-4 mb-4 border border-gray-100 rounded-md md:grid-cols-6">
             {Object.values(CategoryEnum).map((c, i) => { 
               return (
                 <Category key={i} category={c} idx={i} />
               )})}
           </div>
           <div className="flex justify-end">
-            <button className="btn" onClick={e => {
-              e.preventDefault();
-              router.push("/learn")
-            }}>
+            <button 
+              className="btn" onClick={e => {
+                e.preventDefault();
+                router.push("/learn")
+              }}
+              disabled={cards.cards.length === 0}
+            >
               Learn
             </button>
           </div>
         </div>
-
-        <hr className="border border-gray-300 border- my-4 w-5/6 mx-auto" />
-
-        <div>
-        <h2 className="text-2xl text-center text-orange-300 my-3">
-            Work with errors.
-        </h2>
-            <Results />
-        </div>
-
+          <Results />
       </main>
     </>
   )

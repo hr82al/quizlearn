@@ -6,35 +6,30 @@ import Image from "next/image";
 import Link from "next/link";
 
 
-export default function Navbar() {
+export default function Navbar({ children }: { children?: React.ReactNode}) {
   const session = useSession();
   const isAdmin = useIsAdmin();
   return (
     <>
       <nav className="flex items-center justify-between w-full h-16 mb-4 bg-sky-900"
       >
-        <Image src="/logo.svg" width={48} height={48} className="ml-4" alt="" />
+        <Link href="/">
+          <Image src="/logo.svg" width={48} height={48} priority={true} className="ml-4" alt="Site logo" />
+        </Link>
+        { children }
         <ul className="flex gap-4 mx-4">
-          <li><Link href="/">Home</Link></li>
-          <li><Link href="/learn">learn</Link></li>
-          {isAdmin ? (
-            <>
-              <li><Link href="/admin/quiz_list">Quizzes list</Link></li>
-              <li><Link href="/admin/quiz">Quiz</Link></li>
-
-            </>
-          ) : (
-            ""
-          )}
           {session.data ? (
-            <Link href="#" onClick={() => signOut()}>Logout</Link>
+            <p></p>
           ) : (
             <>
               <Link href="/register">Register</Link>
               <Link href="#" onClick={() => signIn()}>Login</Link>
             </>
           )}
-          <li className="text-teal-200">{session.data?.user?.name}</li>
+          { typeof session.data?.user?.name === "string" &&
+          (<Link href="#" onClick={() => signOut()}>
+            <li className="text-teal-200">{session.data?.user?.name}</li>
+          </Link>)}
         </ul>
       </nav>
     </>

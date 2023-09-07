@@ -3,7 +3,7 @@ import { checkFill } from "@/redux/features/card/utils";
 import { deleteLastPlate, initCurrentCardOrder, putToAnswer, selectAnswer, selectQuiz, selectUserAnswer } from "@/redux/features/plate/plateSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useEffect } from "react";
-import DeleteSVG from "./DeleteSVG";
+import { BackspaceIcon } from "../Icons";
 
 
 /*
@@ -49,21 +49,21 @@ export default function QuizOrder() {
 
   return (
     <div>
-      <pre className="h-24 min-h-0 bg-violet-950 rounded-sm whitespace-pre-wrap p-2 break-all mb-3">
+      <pre className="h-24 min-h-0 p-2 mb-3 break-all whitespace-pre-wrap rounded-sm bg-violet-950">
         {usersAnswer.join("")}
       </pre>
 
-      <ul className="plates-pad flex flex-wrap flex-row">
+      <ul className="flex flex-row flex-wrap plates-pad">
         {plates}
       </ul>
 
-      <hr className="my-3 w-5/6 mx-auto border-violet-400 drop-shadow-sm" />
-      <div className="flex justify-center content-center gap-5" >
+      <hr className="w-5/6 mx-auto my-3 border-violet-400 drop-shadow-sm" />
+      <div className="flex content-center justify-center gap-5" >
         <button 
           className="btn"
           onClick={() => dispatch(deleteLastPlate())}
         >
-        <DeleteSVG />
+        <BackspaceIcon />
         </button>
 
         <button
