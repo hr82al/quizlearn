@@ -54,9 +54,6 @@ export default function Card() {
       card_body = (
         <Modal>
           <div>
-            {isCorrect.filter(c => c === true).length} / {isCorrect.length}
-          </div>
-          <div>
             Correct!
           </div>
         </Modal>
@@ -65,9 +62,6 @@ export default function Card() {
     case "NOK":
       card_body = (
         <Modal>
-          <div>
-            {isCorrect.filter(c => c === true).length} / {isCorrect.length}
-          </div>
           <div>
             Wrong!
           </div>

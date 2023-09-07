@@ -1,16 +1,16 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Result } from "@prisma/client";
+import { useEffect } from "react"
 import { RepeatIcon, ViewIcon } from "./Icons";
 import { useSession } from "next-auth/react";
-import { log } from "./prisma";
-
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { fetchResultAsync, selectResult } from "@/redux/features/resultSlice";
 
 
 export default function Results() {
   const session = useSession();
-  const [result, setResult] = useState<Result[]>();
+  const result = useAppSelector(selectResult);
+  const dispatch = useAppDispatch();
 
   function handleRepeat(quizId: number) {
 
@@ -21,15 +21,13 @@ export default function Results() {
   }
 
   useEffect(() => {
-    if (session.data) {
-      fetch("/api/result").then(r => r.json()).then(e => {
-        setResult(e);
-      });
+    if (typeof session.data?.user.id === "number" && session.data.user.id >= 0 && result.length === 0) {
+      dispatch(fetchResultAsync());
     }
-  }, []);
+  }, [session.data?.user.id]);
 
   let body = <div></div>
-  if (Array.isArray(result)) {
+  if (result.length > 0) {
     body = (
 <div>
       <hr className="w-5/6 mx-auto my-4 border border-gray-300 border-" />

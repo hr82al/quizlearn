@@ -3,28 +3,36 @@
 import Navbar from "@/components/Navbar";
 import Results from "@/components/results";
 
-import { initCardAsync, selectCategories, selectCategoriesChecked, selectCards, selectIsCorrect, resetCards, setUserId, setCategory } from "@/redux/features/card/cardSlice";
+import { initCardAsync, selectCategoriesChecked, selectCards, selectIsCorrect, resetCards, setCategory, categories } from "@/redux/features/card/cardSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { CategoryEnum } from "@prisma/client";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {  useEffect, useState } from "react";
 
 
 function Category({ category, idx }: { category: CategoryEnum, idx: number }) {
-  const categories = useAppSelector(selectCategories);
   const categoriesChecked = useAppSelector(selectCategoriesChecked);
   const dispatch = useAppDispatch();
   const [checked, setChecked] = useState(categoriesChecked[categories.indexOf(category)]);
+  const {data : session} = useSession();
+
+  const isLogged = typeof session?.user.id === "number" && session.user.id >= 0;
 
   function handleCheck(b: boolean) {
-    setChecked(b);
+    if (isLogged) {
+      setChecked(b);
+    } else {
+      signIn();
+    }
   }
 
   useEffect(() => {
-    dispatch(resetCards());
-    dispatch(setCategory({ category: category, checked: checked}))
-    dispatch(initCardAsync());
+    if (isLogged) {
+      dispatch(resetCards());
+      dispatch(setCategory({ category: category, checked: checked}))
+      dispatch(initCardAsync());
+    }
   }, [checked]);
 
   const hId = `category-check-${idx}`
@@ -49,11 +57,11 @@ export default function Home() {
   const router = useRouter();
   const { data: session } = useSession();
 
-  useEffect(() => {
+/*   useEffect(() => {
     if (typeof session?.user.id === "number") {
       dispatch(setUserId(session.user.id));
     }
-  },[]);
+  },[]); */
 
   useEffect(() => {
     if (cards.cards.length === isCorrect.length) {

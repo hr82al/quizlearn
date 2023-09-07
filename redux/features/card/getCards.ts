@@ -1,6 +1,6 @@
 import { CategoryEnum, Quiz } from "@prisma/client";
 
-const NUMBER_PRELOADED_QUIZZES = 5;
+export const NUMBER_PRELOADED_QUIZZES = 5;
 
 export async function getCards(categories: CategoryEnum[]) {
   if (categories.length === 0) {

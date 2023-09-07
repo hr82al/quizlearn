@@ -13,7 +13,7 @@ export default function Navbar({ children }: { children?: React.ReactNode}) {
     <>
       <nav className="flex items-center justify-between w-full h-16 mb-4 bg-sky-900"
       >
-        <Link href="/">
+        <Link className="pr-8" href="/">
           <Image src="/logo.svg" width={48} height={48} priority={true} className="ml-4" alt="Site logo" />
         </Link>
         { children }
