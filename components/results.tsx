@@ -24,7 +24,8 @@ export default function Results() {
     if (typeof session.data?.user.id === "number" && session.data.user.id >= 0 && result.length === 0) {
       dispatch(fetchResultAsync());
     }
-  }, [session.data?.user.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.data?.user.id, result.length]);
 
   let body = <div></div>
   if (result.length > 0) {

@@ -17,7 +17,8 @@ export default function Learn() {
     if (cards.cards.length === 0) {
       router.push("/");
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cards.cards.length]);
   
   if (cards.cards.length !== 0) {
     return (
@@ -25,7 +26,7 @@ export default function Learn() {
     <header>
       <Navbar>
         <div className="flex w-full">
-          <div className="flex-none">{0}</div>
+          <div className="flex-none">{currentCard.category}</div>
           <div className="flex-auto text-center">{isCorrect.filter(c => c === true).length} : {isCorrect.length}</div>
       </div>
       </Navbar>

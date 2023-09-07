@@ -3,7 +3,7 @@
 import Navbar from "@/components/Navbar";
 import Results from "@/components/results";
 
-import { initCardAsync, selectCategoriesChecked, selectCards, selectIsCorrect, resetCards, setCategory, categories } from "@/redux/features/card/cardSlice";
+import { initCardAsync, selectCategoriesChecked, selectCards, selectIsCorrect, resetCards, setCategory, categories, selectCardsNum } from "@/redux/features/card/cardSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { CategoryEnum } from "@prisma/client";
 import { signIn, useSession } from "next-auth/react";
@@ -19,21 +19,22 @@ function Category({ category, idx }: { category: CategoryEnum, idx: number }) {
 
   const isLogged = typeof session?.user.id === "number" && session.user.id >= 0;
 
+
+  
   function handleCheck(b: boolean) {
     if (isLogged) {
       setChecked(b);
+      resetCategories(b);
     } else {
       signIn();
     }
   }
 
-  useEffect(() => {
-    if (isLogged) {
+  function resetCategories(checked: boolean) {
       dispatch(resetCards());
       dispatch(setCategory({ category: category, checked: checked}))
       dispatch(initCardAsync());
-    }
-  }, [checked]);
+  }
 
   const hId = `category-check-${idx}`
   return (
@@ -55,19 +56,14 @@ export default function Home() {
   const cards = useAppSelector(selectCards);
   const isCorrect = useAppSelector(selectIsCorrect);
   const router = useRouter();
-  const { data: session } = useSession();
-
-/*   useEffect(() => {
-    if (typeof session?.user.id === "number") {
-      dispatch(setUserId(session.user.id));
-    }
-  },[]); */
+  const cardsNum = useAppSelector(selectCardsNum);
 
   useEffect(() => {
     if (cards.cards.length === isCorrect.length) {
       dispatch(resetCards());
     }
-  },[]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[cards.cards.length, isCorrect.length]);
   
   return (
     <>
@@ -92,7 +88,7 @@ export default function Home() {
                 e.preventDefault();
                 router.push("/learn")
               }}
-              disabled={cards.cards.length === 0}
+              disabled={cardsNum === 0}
             >
               Learn
             </button>

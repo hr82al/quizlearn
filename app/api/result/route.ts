@@ -1,4 +1,4 @@
-import { log, prisma } from "@/components/prisma";
+import { prisma } from "@/components/prisma";
 import { Prisma, Result } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server"
@@ -24,7 +24,6 @@ async function runProtectByUserId(fn: (userId: number) => Promise<ResultT>) {
 export async function POST(request: Request) {
   return await runProtectByUserId(async (userId) => {
     const req = await request.json();
-    log(JSON.stringify(req))
     if (
       Prisma.ResultScalarFieldEnum.quizId in req &&
       Prisma.ResultScalarFieldEnum.isCorrect in req

@@ -17,7 +17,6 @@ const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
 export default function Card() {
   const currentCard = useAppSelector(selectCurrentCard);
   const cardState = useAppSelector(selectCardState);
-  const isCorrect = useAppSelector(selectIsCorrect);
   const router = useRouter();
   const dispatch = useAppDispatch();
   
@@ -36,6 +35,7 @@ export default function Card() {
       dispatch(initCardAsync());
       router.push("/");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardState]);
 
   let card_body: React.ReactNode = <div></div>

@@ -45,6 +45,7 @@ export default function QuizOrder() {
       answer: currentCard.answer,
       quiz: currentCard.quiz,
     }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCard.answer, currentCard.quiz]);
 
   return (

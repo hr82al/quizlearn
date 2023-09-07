@@ -91,7 +91,6 @@ export const plateSlice = createSlice({
     },
 
     deleteLastPlate: (state) => {
-      log("delete")
       let text = state.userAnswer.pop();
       if (typeof text === "string") {
         for (let i of state.quiz) {

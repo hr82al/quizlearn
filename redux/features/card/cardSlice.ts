@@ -77,7 +77,7 @@ export const changeCardStateAsync = (): AppThunk =>
         const isCorrect = cardState === "OK";
         dispatch(setIsCorrect(isCorrect)); 
         dispatch(saveQuizResult());
-        dispatch(loadCardsAsync);    
+        dispatch(loadCardsAsync());    
         setTimeout(() => {
           pos += 1;
           dispatch(setPos(pos));
@@ -170,5 +170,6 @@ export const selectIsCorrect = (state: AppState) => state.card.isCorrect;
 export const selectCategoriesChecked = (state: AppState) => state.card.categoriesChecked;
 //export const selectUserId = (state: AppState) => state.card.userId;
 export const selectPreloadedCards = (state: AppState) => state.card.cards;
+export const selectCardsNum = (state: AppState) => state.card.cards.length;
 
 export default cardSlice.reducer;

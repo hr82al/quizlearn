@@ -1,4 +1,3 @@
-import { log } from "@/components/prisma";
 import { useSession } from "next-auth/react";
 
 const NOT_LETTERS = "!@#$%^&*()_-+={}[:;\"'\\|,.<>/?]"
@@ -112,10 +111,8 @@ function splitToWords(text: string): string[] {
 }
 
 function checkVariant(text1: string, text2: string) {
-  log(`res : ${text1} : ${text2}`)
   const tmp1 = splitToWords(text1);
   const tmp2 = splitToWords(text2);
-  log(`res : ${tmp1} : ${tmp2}`)
   if (tmp1.length != tmp2.length) {
     return false;
   }

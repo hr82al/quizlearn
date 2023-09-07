@@ -1,14 +1,12 @@
 import { Result } from "@prisma/client";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { AppState, AppThunk } from "../store";
-import { log } from "@/components/prisma";
 
 
 const initialState: Result[] = [];
 
 export const fetchResultAsync = (): AppThunk =>
   async (dispatch, getState) => {
-    log("fetch")
     const result = await (await fetch("/api/result")).json();
     dispatch(setResult(result));
   }
