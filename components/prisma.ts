@@ -2,4 +2,4 @@ import { PrismaClient } from "@prisma/client";
 
 export const prisma = new PrismaClient();
 
-export const hlog = console.log;
+//export const hlog = console.log;

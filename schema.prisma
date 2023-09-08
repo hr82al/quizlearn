@@ -31,12 +31,10 @@ model Quiz {
 
 model User {
   id           Int       @id @default(autoincrement())
-  name         String    @db.VarChar(25)
+  name         String    @unique @db.VarChar(25)
   bcryptHash   String    @db.Char(60)
   createdAt    DateTime  @default(now())
   email        String?   @db.VarChar(64)
-
-  @@unique([name, email])
 }
 
 model Result {

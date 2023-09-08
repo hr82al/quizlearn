@@ -5,10 +5,9 @@ import { RepeatIcon, ViewIcon } from "./Icons";
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchResultAsync, selectResult } from "@/redux/features/resultSlice";
-import { hlog } from "./prisma";
 import { Quiz } from "@prisma/client";
 
-async function fetchQuestionAndAnswerByID(id: number) {
+export async function fetchQuizID(id: number) {
   const result = await (await fetch(`/api/quiz/${id}`)).json() as Quiz | null;
   return result;
 }
@@ -19,13 +18,11 @@ export default function Results() {
   const dispatch = useAppDispatch();
 
   async function handleRepeat(quizId: number) {
-    const result = await fetchQuestionAndAnswerByID(quizId);
-    hlog(result);
+    const result = await fetchQuizID(quizId);
   }
 
   async function handleView(quizId: number) {
-    const result = await fetchQuestionAndAnswerByID(quizId);
-    hlog(result);
+    const result = await fetchQuizID(quizId);
   }
 
   useEffect(() => {
