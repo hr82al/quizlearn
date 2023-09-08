@@ -6,6 +6,8 @@ import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchResultAsync, selectResult } from "@/redux/features/resultSlice";
 import { Quiz } from "@prisma/client";
+import { useRouter } from "next/navigation";
+
 
 export async function fetchQuizID(id: number) {
   const result = await (await fetch(`/api/quiz/${id}`)).json() as Quiz | null;
@@ -16,13 +18,14 @@ export default function Results() {
   const session = useSession();
   const result = useAppSelector(selectResult);
   const dispatch = useAppDispatch();
+  const  router = useRouter();
 
   async function handleRepeat(quizId: number) {
     const result = await fetchQuizID(quizId);
   }
 
   async function handleView(quizId: number) {
-    const result = await fetchQuizID(quizId);
+    router.push(`/view-answer/${quizId}`)
   }
 
   useEffect(() => {

@@ -4,7 +4,6 @@ import { ChangeEvent, MouseEventHandler, useEffect, useState } from "react";
 import { hashSync } from "bcrypt-ts";
 import { signIn } from "next-auth/react";
 
-const log = console.log;
 export default function Register() {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");

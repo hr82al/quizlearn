@@ -1,4 +1,4 @@
-import { changeCardStateAsync, selectCurrentCard, setCardState } from "@/redux/features/card/cardSlice";
+import { CardNotification, selectCurrentCard, setCardNotification, setIsCorrect, submitCardAsync } from "@/redux/features/card/cardSlice";
 import { checkFill } from "@/redux/features/card/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { KeyboardEvent, useState } from "react";
@@ -11,12 +11,14 @@ export default function QuizFill() {
 
   function handleSubmit() {
     const isCorrect = checkFill(answer, quiz.answer);
-    if (isCorrect) {    
+    dispatch(submitCardAsync(isCorrect));
+   /*  if (isCorrect) {    
       dispatch(setCardState("OK"));
     } else {
       dispatch(setCardState("NOK"));
     }
-    dispatch(changeCardStateAsync());
+    dispatch(changeCardStateAsync()); */
+
   }
 
   function handleEnter(e: KeyboardEvent<HTMLInputElement>) {

@@ -3,7 +3,7 @@
 import Navbar from "@/components/Navbar";
 import Results from "@/components/results";
 
-import { initCardAsync, selectCategoriesChecked, selectCards, selectIsCorrect, resetCards, setCategory, categories, selectCardsNum } from "@/redux/features/card/cardSlice";
+import { initCardAsync, selectCards, resetCards, setCategory, categories, selectSelectedCategories, } from "@/redux/features/card/cardSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { CategoryEnum } from "@prisma/client";
 import { signIn, useSession } from "next-auth/react";
@@ -12,9 +12,9 @@ import {  useEffect, useState } from "react";
 
 
 function Category({ category, idx }: { category: CategoryEnum, idx: number }) {
-  const categoriesChecked = useAppSelector(selectCategoriesChecked);
+  const categoriesChecked = useAppSelector(selectSelectedCategories);
   const dispatch = useAppDispatch();
-  const [checked, setChecked] = useState(categoriesChecked[categories.indexOf(category)]);
+  const [checked, setChecked] = useState(categoriesChecked.includes(category));
   const {data : session} = useSession();
 
   const isLogged = typeof session?.user.id === "number" && session.user.id >= 0;
@@ -54,16 +54,8 @@ function Category({ category, idx }: { category: CategoryEnum, idx: number }) {
 export default function Home() {
   const dispatch = useAppDispatch();
   const cards = useAppSelector(selectCards);
-  const isCorrect = useAppSelector(selectIsCorrect);
   const router = useRouter();
-  const cardsNum = useAppSelector(selectCardsNum);
 
-  useEffect(() => {
-    if (cards.cards.length === isCorrect.length) {
-      dispatch(resetCards());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[cards.cards.length, isCorrect.length]);
   
   return (
     <>
@@ -88,7 +80,7 @@ export default function Home() {
                 e.preventDefault();
                 router.push("/learn")
               }}
-              disabled={cardsNum === 0}
+              disabled={cards.length === 0}
             >
               Learn
             </button>

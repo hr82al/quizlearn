@@ -2,7 +2,6 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { splitToElements } from "../card/utils";
 import { AppState } from "@/redux/store";
 
-const log = console.log;
 
 export interface  QuizPlate{
   text: string;

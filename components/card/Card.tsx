@@ -1,6 +1,6 @@
 "use client"
 
-import { initCardAsync, selectCardState, selectCurrentCard, selectIsCorrect } from "@/redux/features/card/cardSlice";
+import { CardNotification, selectCardNotification, selectCurrentCard } from "@/redux/features/card/cardSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { QuizEnum } from "@prisma/client"
 import Modal from "./Modal";
@@ -16,10 +16,9 @@ const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
 
 export default function Card() {
   const currentCard = useAppSelector(selectCurrentCard);
-  const cardState = useAppSelector(selectCardState);
+  const cardNotification = useAppSelector(selectCardNotification);
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  
+
   let quiz_body: React.ReactNode = <div></div>
   switch (currentCard?.quizType) {
     case QuizEnum.FILL:
@@ -30,43 +29,36 @@ export default function Card() {
       break;
   }
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (cardState === "FINISHED") {
       dispatch(initCardAsync());
       router.push("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cardState]);
+  }, [cardState]); */
 
   let card_body: React.ReactNode = <div></div>
-  switch (cardState) {
-    case "CARD":
-      card_body = (
-        <div className="container p-4 mx-auto card bg-sky-800 rounded-xl">
-          <div className={"mb-2 " + jetBrainFont.className}>
-            {currentCard?.question}
+  if (currentCard !== undefined) {
+    switch (cardNotification) {
+      case CardNotification.NONE:
+        card_body = (
+          <div className="container p-4 mx-auto card bg-sky-800 rounded-xl">
+            <div className={"mb-2 " + jetBrainFont.className}>
+              {currentCard.question}
+            </div>
+            {quiz_body}
           </div>
-          {quiz_body}
-        </div>
-      );
-      break;
-    case "OK":
-      card_body = (
-        <Modal>
-          <div>
-            Correct!
-          </div>
-        </Modal>
-      );
-      break;
-    case "NOK":
-      card_body = (
-        <Modal>
-          <div>
-            Wrong!
-          </div>
-        </Modal>);
-      break;
+        );
+        break;
+      default:
+        card_body = (
+          <Modal>
+            <div>
+              {cardNotification.valueOf()}
+            </div>
+          </Modal>
+        );
+    }
   }
 
   return card_body;

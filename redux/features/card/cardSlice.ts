@@ -1,115 +1,106 @@
 import { CategoryEnum, Prisma, Quiz } from "@prisma/client";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { NUMBER_PRELOADED_QUIZZES, getCards } from "./getCards";
+import { getCards } from "./getCards";
 import { AppState, AppThunk } from "@/redux/store";
 
 
 
 const HOVER_TIMEOUT = 1500;
 
-export type CardState = "OK" | "NOK" | "CARD" | "FINISHED";
+
+export enum CardNotification {
+  OK = "Correct!",
+  NOK = "Wrong!",
+  NONE = "NONE",
+}
 
 export interface CardI {
   cards: Quiz[];
-  isCorrect: boolean[];
-  pos: number;
-  state: CardState;
-  //userId: number,
-  categoriesChecked: boolean[];
+  currentCard: Quiz | undefined;
+  cardNotification: CardNotification;
+  selectedCategories: CategoryEnum[],
+  totalNum: number,
+  correctNum: number,
 }
 
 export const categories = Object.keys(CategoryEnum) as CategoryEnum[];
 
 const initialState: CardI = {
   cards: [],
-  isCorrect: [],
-  pos: 0,
-  state: "CARD",
-  //userId: -1,
-  categoriesChecked: Array(Object.keys(CategoryEnum).length).fill(false),
+  currentCard: undefined,
+  cardNotification: CardNotification.NONE,
+  selectedCategories: [],
+  totalNum: 0,
+  correctNum: 0,
 };
 
-function onlyChecked(checkedCategories: boolean[]){
-  let checked: CategoryEnum[] = [];
-  for (let i = 0; i < categories.length; i++) {
-    if (checkedCategories[i]) {
-      checked.push(categories[i]);
-    }
-  }
-  return checked;
-}
 
 export const initCardAsync = (): AppThunk =>
   async (dispatch, getState) => {
-    const categoriesChecked = selectCategoriesChecked(getState());
-      let checked = onlyChecked(categoriesChecked);
-      dispatch(setCards(await getCards(checked)));
+    const selectedCategories = selectSelectedCategories(getState());
+    if (selectCardNotification.length > 0) {
+      const cards = await getCards(selectedCategories);
+      if (cards.length > 0) {
+        dispatch(setCurrentCard(cards[0]));
+      }
+      dispatch(setCards(cards.slice(1)));
+    }
   };
+
 
 export const loadCardsAsync = (): AppThunk => 
   async (dispatch, getState) => {
-    const preloadedCards = selectPreloadedCards(getState());
-    const pos = selectPos(getState());
-    if (preloadedCards.length - pos <= 2) {
-      const categoriesChecked = selectCategoriesChecked(getState());
-      const checked = onlyChecked(categoriesChecked);
-      const newCards = preloadedCards.concat(await getCards(checked));
-      if (newCards.length > 10) {
-        dispatch(setPos(pos - NUMBER_PRELOADED_QUIZZES));
-        dispatch(shiftIsCorrect(NUMBER_PRELOADED_QUIZZES));
-        let shiftedCards = newCards.slice(NUMBER_PRELOADED_QUIZZES);
-        dispatch(setCards(shiftedCards));
-      } 
-        dispatch(setCards(newCards));
-      }
-    }
-
-
-export const changeCardStateAsync = (): AppThunk =>
-  async (dispatch, getState) => {
-    const cardState = selectCardState(getState());
     const cards = selectCards(getState());
-    let pos = selectPos(getState());
-
-    switch (cardState) {
-      case "OK":
-      case "NOK": {
-        const isCorrect = cardState === "OK";
-        dispatch(setIsCorrect(isCorrect)); 
-        dispatch(saveQuizResult());
-        dispatch(loadCardsAsync());    
-        setTimeout(() => {
-          pos += 1;
-          dispatch(setPos(pos));
-          if (pos == cards.cards.length) {
-            dispatch(setCardState("FINISHED"));
-          } else {
-            dispatch(setCardState("CARD"));
-          }
-        }, HOVER_TIMEOUT);
-      }
-        break;
+    if (cards.length < 3) {
+      const selectedCategories = selectSelectedCategories(getState());
+      dispatch(setCards(
+        cards.concat(await getCards(selectedCategories))
+      ));
     }
   };
 
-export const saveQuizResult = (): AppThunk =>
+
+export const submitCardAsync = (isCorrect: boolean): AppThunk => 
+  async (dispatch) => {
+    dispatch(setCardNotification(
+      isCorrect ? CardNotification.OK : CardNotification.NOK)
+    );
+    dispatch(score(isCorrect));
+    dispatch(showNotificationAsync());
+    dispatch(saveQuizResultAsync(isCorrect));
+    dispatch(loadCardsAsync());
+  }
+
+
+export const showNotificationAsync = (): AppThunk => 
+  async (dispatch, getState) => {
+    const cardNotification = selectCardNotification(getState());
+    if (cardNotification !== CardNotification.NONE) {
+      setTimeout(() => {
+        dispatch(setCardNotification(CardNotification.NONE));
+      }, HOVER_TIMEOUT);
+    }
+  };
+
+
+export const saveQuizResultAsync = (isCorrect: boolean): AppThunk =>
     async (dispatch, getState) => {
-      //const userId = selectUserId(getState());
-      const isCorrect = selectIsCorrect(getState()).at(-1);
-/*       if (userId < 0 || typeof isCorrect !== "boolean") {
+      const currentCard = selectCurrentCard(getState());
+      if (currentCard === undefined) {
         return;
-      }  */ 
-      const card = selectCurrentCard(getState());
-      
+      }
       await fetch(`${location.origin}/api/result`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          [Prisma.ResultScalarFieldEnum.quizId]: card.id, 
+          [Prisma.ResultScalarFieldEnum.quizId]: currentCard.id, 
           [Prisma.ResultScalarFieldEnum.isCorrect]: isCorrect}),
       });
+
+      // after save need to select next current card
+      dispatch(nextCard());
     }
 
 
@@ -122,54 +113,73 @@ export const cardSlice = createSlice({
       state.cards = action.payload;
     },
 
-    setPos: (state, action: PayloadAction<number>) => {
-      state.pos = action.payload;
+    setCurrentCard: (state, action: PayloadAction<Quiz>) => {
+      state.currentCard = action.payload;
     },
 
-    setCardState: (state, action: PayloadAction<CardState>) => {
-      state.state = action.payload;
+    nextCard: (state) => {
+      if (state.cards.length > 0) {
+        state.currentCard = state.cards[0];
+        state.cards = state.cards.slice(1);
+      };
+    },
+
+    setCardNotification: (state, action: PayloadAction<CardNotification>) => {
+      state.cardNotification = action.payload;
     },
 
     setCategory: (state, action: PayloadAction<{category: CategoryEnum, checked: boolean}>) => {
-      const idx = categories.indexOf(action.payload.category);
-      state.categoriesChecked[idx] = action.payload.checked;
+      if (action.payload.checked) {
+        if (!state.selectedCategories.includes(action.payload.category)) {
+          state.selectedCategories.push(action.payload.category)
+        }
+      } else {
+        if (state.selectedCategories.includes(action.payload.category)) {
+          state.selectedCategories = state.selectedCategories.filter(category => 
+            category !== action.payload.category
+          );
+        }
+      }
     },
 
-    setIsCorrect: (state, action: PayloadAction<boolean>) => {
-      state.isCorrect[state.pos] = action.payload;
-    },
-
-    shiftIsCorrect: (state, action: PayloadAction<number>) => {
-      state.isCorrect = state.isCorrect.slice(action.payload);
+    score: (state, action: PayloadAction<boolean>) => {
+      state.totalNum++;
+      if (action.payload) {
+        state.correctNum++;
+      }
     },
 
     resetCards: (state) => {
       return {
         ...state,
         cards: [],
-        isCorrect: [],
-        pos: 0,
-        state: "CARD",
+        currentCard: undefined,
+        cardNotification: CardNotification.NONE,
+        correctNum: 0,
+        totalNum: 0,
       };
     },
-
-    setUserId: (state, action: PayloadAction<number>) => {
-      //state.userId = action.payload;
-    },
-
   },
 
 });
 
-export const { setCards, setPos, setCardState, setIsCorrect, setCategory,  resetCards, shiftIsCorrect } = cardSlice.actions;
-export const selectCards = (state: AppState) => state.card;
-export const selectPos = (state: AppState) => state.card.pos;
-export const selectCurrentCard = (state: AppState) => state.card.cards[state.card.pos];
-export const selectCardState = (state: AppState) => state.card.state;
-export const selectIsCorrect = (state: AppState) => state.card.isCorrect;
-export const selectCategoriesChecked = (state: AppState) => state.card.categoriesChecked;
-//export const selectUserId = (state: AppState) => state.card.userId;
-export const selectPreloadedCards = (state: AppState) => state.card.cards;
-export const selectCardsNum = (state: AppState) => state.card.cards.length;
+
+export const { 
+  setCards, 
+  setCategory,  
+  resetCards,
+  setCardNotification,
+  setCurrentCard,
+  nextCard,
+  score,
+} = cardSlice.actions;
+
+
+export const selectCards = (state: AppState) => state.card.cards;
+export const selectCurrentCard = (state: AppState) => state.card.currentCard;
+export const selectCardNotification = (state: AppState) => state.card.cardNotification;
+export const selectSelectedCategories = (state: AppState) => state.card.selectedCategories;
+export const selectTotalNum = (state: AppState) => state.card.totalNum;
+export const selectCorrectNum = (state: AppState) => state.card.correctNum;
 
 export default cardSlice.reducer;

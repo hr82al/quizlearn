@@ -41,4 +41,4 @@ CREATE TABLE "Result" (
 CREATE UNIQUE INDEX "Quiz_question_key" ON "Quiz"("question");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_name_email_key" ON "User"("name", "email");
+CREATE UNIQUE INDEX "User_name_key" ON "User"("name");

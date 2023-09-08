@@ -1,4 +1,4 @@
-import { changeCardStateAsync, selectCurrentCard, setCardState } from "@/redux/features/card/cardSlice";
+import { selectCurrentCard, submitCardAsync } from "@/redux/features/card/cardSlice";
 import { checkFill } from "@/redux/features/card/utils";
 import { deleteLastPlate, initCurrentCardOrder, putToAnswer, selectAnswer, selectQuiz, selectUserAnswer } from "@/redux/features/plate/plateSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -15,15 +15,16 @@ export default function QuizOrder() {
   const currentCard = useAppSelector(selectCurrentCard);
   const quizPlates = useAppSelector(selectQuiz);
   const usersAnswer = useAppSelector(selectUserAnswer);
-  const answer = useAppSelector(selectAnswer);
 
   function handleSubmit() {
-    if (checkFill(usersAnswer.join(""), currentCard.answer)) {    
+    const isCorrect = checkFill(usersAnswer.join(""), currentCard.answer);
+    dispatch(submitCardAsync(isCorrect))
+    /* if (checkFill(usersAnswer.join(""), currentCard.answer)) {    
       dispatch(setCardState("OK"));
     } else {
       dispatch(setCardState("NOK"));
     }
-    dispatch(changeCardStateAsync());
+    dispatch(changeCardStateAsync()); */
   }
 
   const plates = quizPlates.map((plate, i) => {
