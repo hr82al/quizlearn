@@ -11,7 +11,6 @@ export const fetchResultAsync = (): AppThunk =>
     dispatch(setResult(result));
   }
 
-
 export const resultSlice = createSlice({
   name: "result",
   initialState,

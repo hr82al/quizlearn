@@ -5,19 +5,27 @@ import { RepeatIcon, ViewIcon } from "./Icons";
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchResultAsync, selectResult } from "@/redux/features/resultSlice";
+import { hlog } from "./prisma";
+import { Quiz } from "@prisma/client";
 
+async function fetchQuestionAndAnswerByID(id: number) {
+  const result = await (await fetch(`/api/quiz/${id}`)).json() as Quiz | null;
+  return result;
+}
 
 export default function Results() {
   const session = useSession();
   const result = useAppSelector(selectResult);
   const dispatch = useAppDispatch();
 
-  function handleRepeat(quizId: number) {
-
+  async function handleRepeat(quizId: number) {
+    const result = await fetchQuestionAndAnswerByID(quizId);
+    hlog(result);
   }
 
-  function handleView(quizId: number) {
-
+  async function handleView(quizId: number) {
+    const result = await fetchQuestionAndAnswerByID(quizId);
+    hlog(result);
   }
 
   useEffect(() => {
@@ -42,7 +50,7 @@ export default function Results() {
           {
             Array.isArray(result) && result.map((e) => {
               return (
-                <div key={e.id} className="flex items-center justify-around w-56 px-4 py-2 rounded-md bg-zinc-700">
+                <div key={e.id} className= "relative flex items-center justify-around w-56 px-4 py-2 rounded-md bg-zinc-700">
 
                   {e.isCorrect ? (
                     <div className="w-24 text-center uppercase bg-green-500 rounded-sm">
@@ -53,10 +61,10 @@ export default function Results() {
                       You lost
                     </div>
                   )}
-                  <div onClick={() => { handleRepeat(e.quizId) }}>
+                  <div className="img-btn" onClick={() => { handleRepeat(e.quizId) }}>
                     <RepeatIcon height={34} width={34} className="flex-shrink-0 p-1 text-green-400 rounded-md bg-zinc-800 " />
                   </div>
-                  <div onClick={() => { handleView(e.quizId) }}>
+                  <div className="img-btn" onClick={() => { handleView(e.quizId) }}>
                     <ViewIcon height={34} width={34} className="flex-shrink-0 p-1 text-gray-400 rounded-md bg-zinc-800" />
                   </div>
                 </div>
