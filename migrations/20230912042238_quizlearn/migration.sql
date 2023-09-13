@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "QuizEnum" AS ENUM ('FILL', 'FILL_PART', 'RADIO', 'CHECK', 'ORDER');
+CREATE TYPE "QuizEnum" AS ENUM ('FILL', 'FILL_PART', 'RADIO', 'CHECK', 'ORDER', 'ORDER_PART');
 
 -- CreateEnum
 CREATE TYPE "CategoryEnum" AS ENUM ('TS');
@@ -22,7 +22,7 @@ CREATE TABLE "User" (
     "name" VARCHAR(25) NOT NULL,
     "bcryptHash" CHAR(60) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "email" VARCHAR(64),
+    "email" VARCHAR(64) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -41,4 +41,4 @@ CREATE TABLE "Result" (
 CREATE UNIQUE INDEX "Quiz_question_key" ON "Quiz"("question");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_name_key" ON "User"("name");
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");

@@ -8,7 +8,7 @@ import { JetBrains_Mono } from "next/font/google";
 import QuizOrder from "./QuizOrder";
 import QuizFill from "./QuizFill";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+
 
  
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });

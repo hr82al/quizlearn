@@ -14,6 +14,7 @@ enum QuizEnum {
   RADIO
   CHECK
   ORDER
+  ORDER_PART
 }
 
 enum CategoryEnum {
@@ -31,10 +32,10 @@ model Quiz {
 
 model User {
   id           Int       @id @default(autoincrement())
-  name         String    @unique @db.VarChar(25)
+  name         String    @db.VarChar(25)
   bcryptHash   String    @db.Char(60)
   createdAt    DateTime  @default(now())
-  email        String?   @db.VarChar(64)
+  email        String    @unique @db.VarChar(64)
 }
 
 model Result {
