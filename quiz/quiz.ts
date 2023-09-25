@@ -4,15 +4,36 @@ function notAName(char: string) {
   return /[^a-zA-Z0-9]/.test(char);
 }
 
-function withEdgeSpaces(text: string, elems: string[]) {
-  let result: string[] = [];
-  elems.forEach(elem => {
-
-  });
+function isSpace(char: string) {
+  return "\n ".includes(char);
 }
 
-function isSpace(char: string) {
-  return  "\n ".includes(char);
+function combineWordWithSpaces(items: string[]) {
+  if (items.length === 0) {
+    return items;
+  }
+  const tmp: string[] = [];
+  items[items.length - 1] += " ";
+  let last = items[0];
+  for (let i = 1; i < items.length; i++) {
+    const isLastSpace = isSpace(last[last.length - 1]);
+    const isCurrentSpace = isSpace(items[i][0]);
+    if (!isLastSpace && isCurrentSpace) {
+      tmp.push(last + items[i]);
+      last = items[i]
+    } else if (isLastSpace && !isCurrentSpace) {
+      last = last + items[i];
+    } else if (isLastSpace && isCurrentSpace) {
+      last = last + items[i];
+    } else {
+      tmp.push(last);
+      last = items[i];
+    }
+  }
+  if (tmp[tmp.length - 1] !== undefined) {
+    tmp[tmp.length - 1] = tmp[tmp.length - 1].slice(0, -1);
+  }
+  return tmp;
 }
 
 export class QuizAttr {
@@ -25,7 +46,8 @@ export class QuizAttr {
 
   static from(text: string) {
     // split to space, word, character items
-    text = ` ${text} `;
+    text = ` ${text}  `;
+    //return `'${text}'`;
     let pieces: string[] = [];
     let idx = 0;
     let tmp = "";
@@ -34,16 +56,16 @@ export class QuizAttr {
       const [isSpacePost, isCharPost, isSpecialPost] = [isSpace(text[idx + 1]), (!notAName(text[idx + 1]) && !isSpace(text[idx + 1])), (notAName(text[idx + 1]) && !isSpace(text[idx + 1]))];
 
       if (
-         // "c "
-        (isCharPrev && isSpacePost)        ||
+        // "c "
+        (isCharPrev && isSpacePost) ||
         // "+ "
-        (isSpecialPrev && isSpacePost)     ||
+        (isSpecialPrev && isSpacePost) ||
         // " c"
-        (isSpacePrev && isCharPost)        ||
+        (isSpacePrev && isCharPost) ||
         // " +"
-        (isSpacePrev && isSpecialPost)     ||
+        (isSpacePrev && isSpecialPost) ||
         // "c+"
-        (isCharPrev && isSpecialPost)      ||
+        (isCharPrev && isSpecialPost) ||
         // "+c"
         (isSpecialPrev && isCharPost)
       ) {
@@ -52,20 +74,21 @@ export class QuizAttr {
         tmp = "";
       } else if (
         // "cc"
-        (isCharPrev && isCharPost)         ||
-         // "++"
-         (isSpecialPrev && isSpecialPost)  ||
-         // "  "
-         (isSpacePrev && isSpacePost)
+        (isCharPrev && isCharPost) ||
+        // "++"
+        (isSpecialPrev && isSpecialPost) ||
+        // "  "
+        (isSpacePrev && isSpacePost)
       ) {
         tmp += prevChar;
       }
       idx++;
     }
-    let tmpS: string[] = []; 
+    // return pieces;
+    let tmpS: string[] = [];
     // split operators except NOT_SPLIT
-    const NOT_SPLIT = ["===", "!==", "==", "!=", "+=", "-=", "*=", "/=", "%="];
-    pieces.forEach(i => {
+    const NOT_SPLIT = ["===", "!==", "==", "!=", "+=", "-=", "*=", "/=", "%=", "++", "--"];
+    pieces.slice(1).forEach(i => {
       if (notAName(i) && !isSpace(i[0])) {
         if (NOT_SPLIT.includes(i)) {
           tmpS.push(i);
@@ -76,26 +99,19 @@ export class QuizAttr {
         tmpS.push(i);
       }
     });
-    pieces = tmpS.slice(1,-1);
-
+    pieces = tmpS;
+    //return pieces;
     // combine word, chars whit spaces
-    idx = 0;
-    const items = new Map<string, string[]>()
-    while (idx + 3 < pieces.length) {
-      const slice = pieces.slice(idx, idx + 3);
-      const [isSpacePrev, prevText] = [isSpace(slice[0].at(0) ?? ""), slice[0]];
-      const [isSpaceRoot, rootText] = [isSpace(slice[1].at(0) ?? ""), slice[1]];
-      const [isSpacePost, postText] = [isSpace(slice[2].at(0) ?? ""), slice[2]];
-      if (isSpacePrev && !isSpaceRoot && isSpacePost) {
-          const arr = items.get(rootText) ?? [];
-          items.set(rootText, arr.concat(`${prevText}${rootText}${postText}`));
-      }
-      idx++;
-    }
-    const result: [string, string[]][] = [];
-    for (const [k, v] of Array.from(items.entries())) {
-      result.push([k, v]);
-    }
+    pieces = combineWordWithSpaces(pieces);
+    return pieces;
+    //const result: [string, string[]][] = [];
+    const tmpMap = new Map<string, string[]>();
+    pieces.forEach(i => {
+      const tmp = i.trim();
+      const arr = tmpMap.get(tmp) ?? [];
+      tmpMap.set(tmp, arr.concat(i));
+    });
+    const result = Array.from(tmpMap.entries());
     return result.shuffle();
   }
 }
