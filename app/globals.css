@@ -21,6 +21,11 @@
 }
 
 @layer components {
+
+  .bg-main {
+    @apply bg-sky-800
+  }
+  
   .card-input {
     @apply block w-full px-3 py-1 mt-1 mb-4 border-2 border-transparent resize-none bg-violet-950 focus:outline-none focus:border-amber-800 rounded-sm
   }
@@ -39,6 +44,7 @@
 
   .quiz-space {
     height: calc(100vh - 5rem);
+    border: 10px solid red;
   }
 
   .modal-notify {
@@ -60,4 +66,14 @@
     filter: brightness(1);
     scale: 0.9;
   }
+
+  .add-icon {
+    bottom: 1rem;
+    right: 1rem;
+  }
+
+  .main-container {
+    @apply container p-4 mx-auto shadow-xl text-lime-200 bg-main rounded-2xl
+  }
+
 }

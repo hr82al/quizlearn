@@ -64,7 +64,7 @@ export default function AddQuiz() {
   }
 
   return (
-    <div className={`container p-4 mx-auto shadow-xl text-lime-200 bg-sky-800 rounded-2xl ${jetBrainFont.className}`}>
+    <div className={`main-container ${jetBrainFont.className}`}>
       <label htmlFor="insert-question" className="block">
         Question:
       </label>
