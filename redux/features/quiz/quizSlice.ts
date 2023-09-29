@@ -1,5 +1,5 @@
 import { AppState, AppThunk } from "@/redux/store";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, ThunkAction, createSlice } from "@reduxjs/toolkit";
 
 
 export type Infillinator = [string, string[]];
@@ -21,7 +21,7 @@ export interface QuizRecord {
 export enum TypeUI {
   question = "text",
   body = "blankedText",
-  infillinators = "Infillinator",
+  infillinators = "infillinators",
   variants = "list",
   isRadio = "checkbox",
   answers = "list",
@@ -41,12 +41,17 @@ export function isQuizRecord(obj: object): obj is QuizRecord {
 }
 
 const EMPTY_QUIZ_RECORD: QuizRecord = {
-  question: "1",
-  body: "2",
+  question: "What is the output of this code?",
+  body: "print('My name is Khans'.split(sep = ' ', maxsplit = 1))",
   infillinators: [],
-  variants: [],
+  variants: [
+    "['My' 'name' 'is' 'Khan']",
+    "['My name' 'is Khan']",
+    "['My' 'name' 'is' 'Khan']",
+    "['My', 'name is Khans']"
+  ],
   isRadio: false,
-  answers: [],
+  answers: ["['My', 'name is Khans']"],
 };
 
 function setQuizRecord(target: QuizRecord, key: keyof QuizRecord, value: string) {
@@ -67,27 +72,49 @@ type InitialState = {
   data: QuizRecord,
   property: keyof QuizRecord
   text: string;
+  listItem: string,
 }
 
 const initialState: InitialState = {
   data: EMPTY_QUIZ_RECORD,
   property: "question",
-  text: "",
+  text: EMPTY_QUIZ_RECORD.question,
+  listItem: "",
 }
 
+// convert object to text
+function toText(obj: string | boolean | string[] | Infillinator[]) {
+  let text: string;
+  if (typeof obj !== "string") {
+    text = JSON.stringify(obj);
+  } else {
+    text = obj;
+  }
+  return text;
+}
 
-export const nextProperty = (): AppThunk =>
+const switchScreen = (to: () => void): AppThunk => 
   (dispatch, getState) => {
     dispatch(saveText());
-    dispatch(toNextProperty());
-    dispatch(setText(selectCurrentText(getState()).toString()));
+    to();
+    const obj = selectCurrentText(getState());
+    dispatch(setText(toText(obj)));
+    dispatch(setListItem(""));
+  }
+
+export const nextProperty = (): AppThunk =>
+  (dispatch) => {
+    dispatch(switchScreen(() => {
+      dispatch(toNextProperty());
+    }));
   }
 
 export const toProperty = (property: string): AppThunk => 
-  (dispatch, getState) => {
+  (dispatch) => {
+    dispatch(switchScreen(() => {
+      dispatch(setProperty(property));
+    }));
     dispatch(saveText());
-    dispatch(setProperty(property));
-    dispatch(setText(selectCurrentText(getState()).toString()));
   }
 
 
@@ -115,6 +142,15 @@ export const quizSlice = createSlice({
     setChecked: (state, action: PayloadAction<boolean>) => {
       state.data.isRadio = action.payload;
     },
+
+    setListItem: (state, action: PayloadAction<string>) => {
+      state.listItem = action.payload;
+    },
+
+    addItem: (state) => {
+      state.text = JSON.stringify(JSON.parse(state.text).concat(state.listItem));
+      state.listItem = "";
+    },
   }
 });
 
@@ -122,7 +158,8 @@ export const quizSlice = createSlice({
 export const selectQuizProperty = (state: AppState) => state.quiz.property;
 export const selectCurrentText = (state: AppState) => state.quiz.data[state.quiz.property];
 export const selectQuizText = (state: AppState) => state.quiz.text;
+export const selectQuizListItem = (state: AppState) => state.quiz.listItem;
 
-export const { saveText, toNextProperty, setText, setProperty, setChecked } = quizSlice.actions;
+export const { saveText, toNextProperty, setText, setProperty, setChecked, addItem, setListItem } = quizSlice.actions;
 
 export default quizSlice.reducer;

@@ -1,10 +1,10 @@
 import { JetBrains_Mono } from "next/font/google";
 import Navbar from "../Navbar";
 import { useState } from "react";
-import { capitalize } from "@/quiz/utils";
+import { capitalize, splitToItems } from "@/quiz/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { TypeUI, getTypeUI, nextProperty, properties, selectQuizProperty, selectQuizText, setChecked, setText,  toProperty } from "@/redux/features/quiz/quizSlice";
-import { hlog } from "../prisma";
+import { TypeUI, addItem, nextProperty, properties, selectQuizListItem, selectQuizProperty, selectQuizText, setChecked, setListItem, setText,  toProperty } from "@/redux/features/quiz/quizSlice";
+
 
 
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -19,14 +19,23 @@ const test_quiz = `function greet(person: { name: string; age: number }) {
 export default function AddQuiz() {
   const dispatch = useAppDispatch();
   const text = useAppSelector(selectQuizText);
-  const property = useAppSelector(selectQuizProperty)
+  const property = useAppSelector(selectQuizProperty);
+  const isList = TypeUI[property as keyof typeof TypeUI].valueOf() === "list";
+  const hidden = isList ? "" : "hidden";
+  const listItem = useAppSelector(selectQuizListItem);
+
 
   // TODO
   const isReady = false;
 
-  
+
   function handleNext() {
     dispatch(nextProperty());
+  }
+
+  function parseInfillinators() {
+    const parsed = splitToItems(listItem);
+    dispatch(setText(JSON.stringify(parsed)));
   }
 
   return (
@@ -37,17 +46,30 @@ export default function AddQuiz() {
       <div
         className={`main-container flex-auto flex flex-col gap-4 ${jetBrainFont.className}`}
       >
-        <textarea 
+        <textarea
           className="quiz-input flex-auto"
           autoFocus
           onChange={e => dispatch(setText(e.target.value))}
           value={text}
         >
         </textarea>
+        <List />
 
         <div className="flex flex-wrap justify-end gap-2">
-          <Menu />
           <button 
+            className={`btn ${property === "infillinators" ? "" : "hidden"}`}
+            onClick={parseInfillinators}
+          >
+            Parse infillinator
+          </button>
+          <button
+            className={`btn ${hidden}`}
+            onClick={() => dispatch(addItem())}
+          >
+            Add
+          </button>
+          <Menu />
+          <button
             className="btn w-28"
             onClick={handleNext}
           >
@@ -72,7 +94,6 @@ function InputRadio({ property }:
   const dispatch = useAppDispatch();
 
   function handleChange() {
-    hlog(property);
     dispatch(toProperty(property));
   }
 
@@ -83,7 +104,7 @@ function InputRadio({ property }:
         type="radio"
         name="screen"
         checked={currentProperty === property}
-        onClick={handleChange}
+        onChange={handleChange}
       />
     </label>
   )
@@ -113,6 +134,7 @@ function InputCheck ({ property }: { property: string}) {
 function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const hidden: string =isOpen ? "" : "hidden ";
+  const property = useAppSelector(selectQuizProperty);
 
 
   const inputs = properties.map((i, k) => {
@@ -126,6 +148,7 @@ function Menu() {
       );
     }
   });
+
   return (
     <div className="relative">
       <button className="btn" onClick={() => setIsOpen(!isOpen)}>Menu</button>
@@ -135,5 +158,23 @@ function Menu() {
         {inputs}
       </div>
     </div>
+  );
+}
+
+function List() {
+  const property = useAppSelector(selectQuizProperty);
+  const listItem = useAppSelector(selectQuizListItem);
+  const dispatch = useAppDispatch();
+  const typeUI = TypeUI[property as keyof typeof TypeUI].valueOf();
+  const isList = typeUI === "list" || typeUI === "infillinators";
+  const hidden = isList ? "" : "hidden";
+
+  return (
+    <textarea
+      className={`quiz-input h-1/5 ${hidden}`}
+      value={listItem}
+      onChange={(e) => dispatch(setListItem(e.target.value))}
+    >
+    </textarea>
   );
 }
