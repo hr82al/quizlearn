@@ -18,6 +18,16 @@ export interface QuizRecord {
   answers: string[];
 }
 
+export enum TypeUI {
+  question = "text",
+  body = "blankedText",
+  infillinators = "Infillinator",
+  variants = "list",
+  isRadio = "checkbox",
+  answers = "list",
+};
+
+
 export function isQuizRecord(obj: object): obj is QuizRecord {
   const quizRecord = obj as QuizRecord;
   return quizRecord.question !== undefined &&
@@ -101,6 +111,10 @@ export const quizSlice = createSlice({
     saveText: (state) => {
       state.data = setQuizRecord(state.data, state.property, state.text)
     },
+
+    setChecked: (state, action: PayloadAction<boolean>) => {
+      state.data.isRadio = action.payload;
+    },
   }
 });
 
@@ -109,6 +123,6 @@ export const selectQuizProperty = (state: AppState) => state.quiz.property;
 export const selectCurrentText = (state: AppState) => state.quiz.data[state.quiz.property];
 export const selectQuizText = (state: AppState) => state.quiz.text;
 
-export const { saveText, toNextProperty, setText, setProperty } = quizSlice.actions;
+export const { saveText, toNextProperty, setText, setProperty, setChecked } = quizSlice.actions;
 
 export default quizSlice.reducer;

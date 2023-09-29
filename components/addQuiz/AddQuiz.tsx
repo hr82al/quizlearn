@@ -3,7 +3,7 @@ import Navbar from "../Navbar";
 import { useState } from "react";
 import { capitalize } from "@/quiz/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { nextProperty, properties, selectQuizProperty, selectQuizText, setText,  toProperty } from "@/redux/features/quiz/quizSlice";
+import { TypeUI, getTypeUI, nextProperty, properties, selectQuizProperty, selectQuizText, setChecked, setText,  toProperty } from "@/redux/features/quiz/quizSlice";
 import { hlog } from "../prisma";
 
 
@@ -65,7 +65,7 @@ export default function AddQuiz() {
   );
 }
 
-function Input({ property }: 
+function InputRadio({ property }: 
   { property: string }
 ) {
   const currentProperty = useAppSelector(selectQuizProperty);
@@ -80,7 +80,7 @@ function Input({ property }:
     <label className="flex gap-4 justify-between rounded-full border-2 border-main-light px-2 py-1 w-44">
       {capitalize(property)}
       <input 
-        type="radio" 
+        type="radio"
         name="screen"
         checked={currentProperty === property}
         onClick={handleChange}
@@ -89,18 +89,42 @@ function Input({ property }:
   )
 }
 
+function InputCheck ({ property }: { property: string}) {
+  const [checked, setCheckedLocal] = useState(false);
+  
+  function handleChange(e: boolean) {
+    setChecked(e);
+    setCheckedLocal(e);
+  }
+
+  return (
+    <label className="flex gap-4 justify-between rounded-full border-2 border-main-light px-2 py-1 w-44">
+      {capitalize(property)}
+      <input 
+        type="checkbox"
+        name="checkbox"
+        checked={checked}
+        onChange={(e) => handleChange(e.target.checked)}
+      />
+    </label>
+  );
+}
+
 function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const hidden: string =isOpen ? "" : "hidden ";
 
 
   const inputs = properties.map((i, k) => {
-    return (
-      <Input 
-        key={k} 
-        property={i}
-      />
-    );
+    if (TypeUI[i as keyof typeof TypeUI] === TypeUI.isRadio) {
+      return (
+        <InputCheck key={k} property={i} />
+      );
+    } else {
+      return (
+        <InputRadio key={k} property={i} />
+      );
+    }
   });
   return (
     <div className="relative">
