@@ -1,5 +1,6 @@
+import { Infillinator } from "@/redux/features/quiz/quizSlice";
+
 type EdgeFunction = (text: string) => boolean
-export type QuizType = [string, string[]];
 
 
 function splitByEdgeFunction(text: string, edgeFunction: EdgeFunction) {
@@ -117,7 +118,7 @@ export function splitToItems(text: string) {
     return shuffle(groups);
 }
 
-export function prettyQuiz(quiz: QuizType[]): string {
+export function prettyQuiz(quiz: Infillinator[]): string {
     let result: string[] = [];
     quiz.forEach(i => {
         const value = i[0];
@@ -125,4 +126,11 @@ export function prettyQuiz(quiz: QuizType[]): string {
         result.push(`"${value}":\n    ${key}`);
     });
     return result.join("\n");
+}
+
+export function capitalize(text: string) {
+    if (text.length > 0) {
+        return text.at(0)?.toUpperCase() + text.slice(1);
+    }
+    return text;
 }
