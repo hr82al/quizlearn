@@ -3,7 +3,7 @@ import Navbar from "../Navbar";
 import { useState } from "react";
 import { capitalize, splitToItems } from "@/quiz/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { TypeUI, addItem, nextProperty, properties, selectQuizListItem, selectQuizProperty, selectQuizText, setChecked, setListItem, setText,  toProperty } from "@/redux/features/quiz/quizSlice";
+import { TypeUI, addItem, nextProperty, properties, selectIsRadio, selectIsReady, selectQuizListItem, selectQuizProperty, selectQuizText, setIsRadio, setListItem, setText,  toProperty } from "@/redux/features/quiz/quizSlice";
 
 
 
@@ -23,10 +23,7 @@ export default function AddQuiz() {
   const isList = TypeUI[property as keyof typeof TypeUI].valueOf() === "list";
   const hidden = isList ? "" : "hidden";
   const listItem = useAppSelector(selectQuizListItem);
-
-
-  // TODO
-  const isReady = false;
+  const isReady = useAppSelector(selectIsReady);
 
 
   function handleNext() {
@@ -111,11 +108,11 @@ function InputRadio({ property }:
 }
 
 function InputCheck ({ property }: { property: string}) {
-  const [checked, setCheckedLocal] = useState(false);
+  const dispatch = useAppDispatch();
+  const checked = useAppSelector(selectIsRadio);
   
   function handleChange(e: boolean) {
-    setChecked(e);
-    setCheckedLocal(e);
+    dispatch(setIsRadio(e));
   }
 
   return (
