@@ -1,18 +1,31 @@
-import { hlog } from "@/components/prisma";
 import { AppState, AppThunk } from "@/redux/store";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { stat } from "fs";
 
 
 export type Infillinator = [string, string[]];
 
 function isInfillinator(obj: object): obj is Infillinator {
-  return Array.isArray(obj) && typeof obj[0] === "string" && Array.isArray(obj[1]) && obj[1].every(i => typeof i === "string");
+  if (Array.isArray(obj)) {
+    if (obj.length === 0) {
+      return true;
+    } else if (obj.every(i => i.length == 2 && typeof i[0] === "string" && isStringList(i[1]))) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
 }
 
 function isStringList(obj: object): obj is string[] {
   return Array.isArray(obj) && obj.every(i => typeof i === "string");
 }
+
+export type UI = "text" | "blankedText" | "infillinators" | "list" | "checkbox";
+
+
+export type QuizRecordPropertyType = "question" | "body" | "infillinators" | "variants" | "isRadio" | "answers";
 
 
 export interface QuizRecord {
@@ -24,7 +37,7 @@ export interface QuizRecord {
   answers: string[];
 }
 
-export enum TypeUI {
+export enum UIEnum {
   question = "text",
   body = "blankedText",
   infillinators = "infillinators",
@@ -61,8 +74,7 @@ const EMPTY_QUIZ_RECORD: QuizRecord = {
 };
 
 function setQuizRecord(target: QuizRecord, key: keyof QuizRecord, value: string) {
-  hlog(typeof target[key], key)
-  let parsed_value;
+  let parsed_value: Infillinator | string | string[] | boolean | undefined = undefined;
   if (typeof target[key] === "string") {
     parsed_value = value;
   } else if (key === "variants" || key === "answers") {
@@ -75,8 +87,22 @@ function setQuizRecord(target: QuizRecord, key: keyof QuizRecord, value: string)
     if (typeof tmp === "boolean") {
       parsed_value = tmp;
     }
+  } else if (key === "infillinators") {
+    if (typeof value === "string") {
+      let tmp = JSON.parse(value)
+      if (isInfillinator(tmp)) {
+        parsed_value = tmp;
+      } else {
+        parsed_value = [];
+      }
+    } else {
+      parsed_value = [];
+    }
   } else {
     return target
+  }
+  if (parsed_value === undefined) {
+    return target;
   }
   return {
     ...target,
@@ -89,7 +115,7 @@ const LENGTH = properties.length;
 
 type InitialState = {
   data: QuizRecord,
-  property: keyof QuizRecord
+  property: QuizRecordPropertyType,
   text: string;
   listItem: string,
 }
@@ -112,28 +138,20 @@ function toText(obj: string | boolean | string[] | Infillinator[]) {
   return text;
 }
 
-const switchScreen = (to: () => void): AppThunk => 
+export const setScreen = (property: QuizRecordPropertyType): AppThunk =>
   (dispatch, getState) => {
     dispatch(saveText());
-    to();
+    dispatch(setProperty(property));
     const obj = selectCurrentText(getState());
     dispatch(setText(toText(obj)));
     dispatch(setListItem(""));
   }
 
-export const nextProperty = (): AppThunk =>
-  (dispatch) => {
-    dispatch(switchScreen(() => {
-      dispatch(toNextProperty());
-    }));
-  }
-
-export const toProperty = (property: string): AppThunk => 
-  (dispatch) => {
-    dispatch(switchScreen(() => {
-      dispatch(setProperty(property));
-    }));
-    dispatch(saveText());
+export const nextScreen = (): AppThunk => 
+  (dispatch, getState) => {
+    const idx = (properties.indexOf(getState().quiz.property) + 1) % LENGTH;
+    const property = properties[idx] as QuizRecordPropertyType;
+    dispatch(setScreen(property));
   }
 
 
@@ -146,11 +164,14 @@ export const quizSlice = createSlice({
       state.property = properties[idx] as keyof QuizRecord;
     },
 
-    setProperty: (state, action: PayloadAction<string>) => {
-      state.property = action.payload as keyof QuizRecord;
+    setProperty: (state, action: PayloadAction<QuizRecordPropertyType>) => {
+      state.property = action.payload;
     },
 
     setText: (state, action: PayloadAction<string>) => {
+      if (typeof action.payload === undefined) {
+        throw new Error("Error param")
+      }
       state.text = action.payload;
     },
 
@@ -175,7 +196,10 @@ export const quizSlice = createSlice({
 
 
 export const selectQuizProperty = (state: AppState) => state.quiz.property;
-export const selectCurrentText = (state: AppState) => state.quiz.data[state.quiz.property];
+export const selectCurrentText = (state: AppState) => {
+  // hlog("property: " + state.quiz.property)
+  return state.quiz.data[state.quiz.property];
+}
 export const selectQuizText = (state: AppState) => state.quiz.text;
 export const selectQuizListItem = (state: AppState) => state.quiz.listItem;
 export const selectIsRadio = (state: AppState) => state.quiz.data.isRadio;

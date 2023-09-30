@@ -3,7 +3,7 @@ import Navbar from "../Navbar";
 import { useState } from "react";
 import { capitalize, splitToItems } from "@/quiz/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { TypeUI, addItem, nextProperty, properties, selectIsRadio, selectIsReady, selectQuizListItem, selectQuizProperty, selectQuizText, setIsRadio, setListItem, setText,  toProperty } from "@/redux/features/quiz/quizSlice";
+import { QuizRecordPropertyType, UIEnum, addItem, nextScreen, properties, selectIsRadio, selectIsReady, selectQuizListItem, selectQuizProperty, selectQuizText, setIsRadio, setListItem, setScreen, setText } from "@/redux/features/quiz/quizSlice";
 
 
 
@@ -20,14 +20,14 @@ export default function AddQuiz() {
   const dispatch = useAppDispatch();
   const text = useAppSelector(selectQuizText);
   const property = useAppSelector(selectQuizProperty);
-  const isList = TypeUI[property as keyof typeof TypeUI].valueOf() === "list";
+  const isList = UIEnum[property as keyof typeof UIEnum].valueOf() === "list";
   const hidden = isList ? "" : "hidden";
   const listItem = useAppSelector(selectQuizListItem);
   const isReady = useAppSelector(selectIsReady);
 
 
   function handleNext() {
-    dispatch(nextProperty());
+    dispatch(nextScreen());
   }
 
   function parseInfillinators() {
@@ -85,13 +85,13 @@ export default function AddQuiz() {
 }
 
 function InputRadio({ property }: 
-  { property: string }
+  { property: QuizRecordPropertyType }
 ) {
   const currentProperty = useAppSelector(selectQuizProperty);
   const dispatch = useAppDispatch();
 
   function handleChange() {
-    dispatch(toProperty(property));
+    dispatch(setScreen(property));
   }
 
   return (
@@ -107,7 +107,7 @@ function InputRadio({ property }:
   )
 }
 
-function InputCheck ({ property }: { property: string}) {
+function InputCheck ({ property }: { property: QuizRecordPropertyType }) {
   const dispatch = useAppDispatch();
   const checked = useAppSelector(selectIsRadio);
   
@@ -135,13 +135,13 @@ function Menu() {
 
 
   const inputs = properties.map((i, k) => {
-    if (TypeUI[i as keyof typeof TypeUI] === TypeUI.isRadio) {
+    if (UIEnum[i as keyof typeof UIEnum] === UIEnum.isRadio) {
       return (
-        <InputCheck key={k} property={i} />
+        <InputCheck key={k} property={i as QuizRecordPropertyType} />
       );
     } else {
       return (
-        <InputRadio key={k} property={i} />
+        <InputRadio key={k} property={i as QuizRecordPropertyType} />
       );
     }
   });
@@ -162,7 +162,7 @@ function List() {
   const property = useAppSelector(selectQuizProperty);
   const listItem = useAppSelector(selectQuizListItem);
   const dispatch = useAppDispatch();
-  const typeUI = TypeUI[property as keyof typeof TypeUI].valueOf();
+  const typeUI = UIEnum[property as keyof typeof UIEnum].valueOf();
   const isList = typeUI === "list" || typeUI === "infillinators";
   const hidden = isList ? "" : "hidden";
 
