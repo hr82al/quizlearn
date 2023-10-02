@@ -12,7 +12,13 @@ const config: Config = {
         main: {
           base: "#075985",
           light: "#38bdf8",
+          lightest: "#bae6fd",
+          dark: "#082f49",
         }
+      },
+      minWidth: {
+        '8': '2rem',
+        '4': '1rem',
       }
     },
   },

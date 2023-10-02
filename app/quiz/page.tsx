@@ -1,9 +1,9 @@
 "use client"
 
-import { Quiz } from "@/components/quiz/Quiz"
+import { QuizSolve } from "@/components/quizSolve/QuizSolve"
 
 export default function QuizPage() {
     return (
-        <Quiz/>
+        <QuizSolve/>
     )
 }

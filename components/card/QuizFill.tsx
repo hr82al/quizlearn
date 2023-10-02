@@ -1,4 +1,4 @@
-import { CardNotification, selectCurrentCard, setCardNotification, setIsCorrect, submitCardAsync } from "@/redux/features/card/cardSlice";
+import { CardNotification, selectCurrentCard, setCardNotification, setIsCorrect, submitCardAsync } from "@/redux/features/card/card2Slice";
 import { checkFill } from "@/redux/features/card/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { KeyboardEvent, useState } from "react";

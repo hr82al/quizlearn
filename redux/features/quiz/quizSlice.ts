@@ -1,6 +1,8 @@
 import { AppState, AppThunk } from "@/redux/store";
+import { QuizEnum } from "@prisma/client";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
+export const BLANK = "....";
 
 export type Infillinator = [string, string[]];
 
@@ -22,11 +24,6 @@ function isStringList(obj: object): obj is string[] {
   return Array.isArray(obj) && obj.every(i => typeof i === "string");
 }
 
-export type UI = "text" | "blankedText" | "infillinators" | "list" | "checkbox";
-
-
-export type QuizRecordPropertyType = "question" | "body" | "infillinators" | "variants" | "isRadio" | "answers";
-
 
 export interface QuizRecord {
   question: string;
@@ -37,14 +34,48 @@ export interface QuizRecord {
   answers: string[];
 }
 
+const CAPTIONS = {
+  question: "Question",
+  body: "Body",
+  infillinators: "Infillinators",
+  variants: "Variants",
+  isRadio: "Is Radio",
+  answers: "Answers",
+} as const;
+
+export function propertyTyCaption(property: string) {
+  if (property in CAPTIONS) {
+    return CAPTIONS[property as keyof typeof CAPTIONS];
+  } else {
+    throw new Error(`Caption for property name ${property} not found`);
+  }
+}
+
+export type QuizRecordProperty = keyof QuizRecord
+
+export const enum ScreensKind {
+  TEXT = "TEXT",
+  BLANKED_TEXT = "BLANKED_TEXT",
+  INFILLINATORS = "INFILLINATORS",
+  LIST = "LIST",
+  CHECKBOX = "CHECKBOX",
+  IS_RADIO = "IS_RADIO",
+}
+
 export enum UIEnum {
-  question = "text",
-  body = "blankedText",
-  infillinators = "infillinators",
-  variants = "list",
-  isRadio = "checkbox",
-  answers = "list",
+  question = ScreensKind.TEXT,
+  body = ScreensKind.BLANKED_TEXT,
+  infillinators = ScreensKind.INFILLINATORS,
+  variants = ScreensKind.LIST,
+  isRadio = ScreensKind.CHECKBOX,
+  answers = ScreensKind.LIST,
 };
+
+
+
+export function propertyIsScreenKind(propertyName: string, kind: ScreensKind) {
+  return UIEnum[propertyName as keyof typeof UIEnum].valueOf() === kind;
+}
 
 
 export function isQuizRecord(obj: object): obj is QuizRecord {
@@ -59,9 +90,12 @@ export function isQuizRecord(obj: object): obj is QuizRecord {
     quizRecord.infillinators.every(i => isInfillinator(i));
 }
 
-const EMPTY_QUIZ_RECORD: QuizRecord = {
+export const EMPTY_QUIZ_RECORD: QuizRecord = {
   question: "What is the output of this code?",
-  body: "print('My name is Khans'.split(sep = ' ', maxsplit = 1))",
+  body: 
+`function greet(person: { name: string; age: number }) {
+  return "Hello " .... person.name;
+}`,
   infillinators: [],
   variants: [
     "['My' 'name' 'is' 'Khan']",
@@ -81,6 +115,8 @@ function setQuizRecord(target: QuizRecord, key: keyof QuizRecord, value: string)
     let tmp = JSON.parse(value);
     if (isStringList(tmp)) {
       parsed_value = tmp;
+    } else {
+      parsed_value = [];
     }
   } else if (typeof target[key] === "boolean") {
     let tmp = JSON.parse(value);
@@ -115,7 +151,7 @@ const LENGTH = properties.length;
 
 type InitialState = {
   data: QuizRecord,
-  property: QuizRecordPropertyType,
+  property: QuizRecordProperty,
   text: string;
   listItem: string,
 }
@@ -138,7 +174,7 @@ function toText(obj: string | boolean | string[] | Infillinator[]) {
   return text;
 }
 
-export const setScreen = (property: QuizRecordPropertyType): AppThunk =>
+export const setScreen = (property: QuizRecordProperty): AppThunk =>
   (dispatch, getState) => {
     dispatch(saveText());
     dispatch(setProperty(property));
@@ -150,7 +186,7 @@ export const setScreen = (property: QuizRecordPropertyType): AppThunk =>
 export const nextScreen = (): AppThunk => 
   (dispatch, getState) => {
     const idx = (properties.indexOf(getState().quiz.property) + 1) % LENGTH;
-    const property = properties[idx] as QuizRecordPropertyType;
+    const property = properties[idx] as QuizRecordProperty;
     dispatch(setScreen(property));
   }
 
@@ -164,7 +200,7 @@ export const quizSlice = createSlice({
       state.property = properties[idx] as keyof QuizRecord;
     },
 
-    setProperty: (state, action: PayloadAction<QuizRecordPropertyType>) => {
+    setProperty: (state, action: PayloadAction<QuizRecordProperty>) => {
       state.property = action.payload;
     },
 
@@ -197,7 +233,6 @@ export const quizSlice = createSlice({
 
 export const selectQuizProperty = (state: AppState) => state.quiz.property;
 export const selectCurrentText = (state: AppState) => {
-  // hlog("property: " + state.quiz.property)
   return state.quiz.data[state.quiz.property];
 }
 export const selectQuizText = (state: AppState) => state.quiz.text;
@@ -206,6 +241,9 @@ export const selectIsRadio = (state: AppState) => state.quiz.data.isRadio;
 export const selectIsReady = (state: AppState) => {
   return state.quiz.data.question.length > 0 && state.quiz.data.answers.length > 0;
 }
+export const selectQuizQuestion = (state: AppState) => state.quiz.data.question;
+export const selectQuizBody = (state: AppState) => state.quiz.data.body;
+export const selectQuiz = (state: AppState) => state.quiz.data;
  
 export const { saveText, toNextProperty, setText, setProperty, setIsRadio, addItem, setListItem } = quizSlice.actions;
 

@@ -1,29 +1,26 @@
 import { JetBrains_Mono } from "next/font/google";
 import Navbar from "../Navbar";
-import { useState } from "react";
-import { capitalize, splitToItems } from "@/quiz/utils";
+import React, { useRef, useState } from "react";
+import { splitToItems } from "@/quiz/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { QuizRecordPropertyType, UIEnum, addItem, nextScreen, properties, selectIsRadio, selectIsReady, selectQuizListItem, selectQuizProperty, selectQuizText, setIsRadio, setListItem, setScreen, setText } from "@/redux/features/quiz/quizSlice";
-
+import { BLANK, QuizRecordProperty, ScreensKind, UIEnum, addItem, nextScreen, properties, propertyIsScreenKind, propertyTyCaption, selectIsRadio, selectIsReady, selectQuizListItem, selectQuizProperty, selectQuizText, setIsRadio, setListItem, setScreen, setText } from "@/redux/features/quiz/quizSlice";
+import { useRouter } from "next/navigation";
+import { hlog } from "../prisma";
 
 
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
-
-
-const test_quiz = `function greet(person: { name: string; age: number }) {
-  return "Hello " + person.name;
-}`;
-
 
 
 export default function AddQuiz() {
   const dispatch = useAppDispatch();
   const text = useAppSelector(selectQuizText);
   const property = useAppSelector(selectQuizProperty);
-  const isList = UIEnum[property as keyof typeof UIEnum].valueOf() === "list";
+  const isList = propertyIsScreenKind(property, ScreensKind.LIST);
   const hidden = isList ? "" : "hidden";
   const listItem = useAppSelector(selectQuizListItem);
   const isReady = useAppSelector(selectIsReady);
+  const router = useRouter();
+  const ref = useRef<HTMLTextAreaElement>(null);
 
 
   function handleNext() {
@@ -35,24 +32,52 @@ export default function AddQuiz() {
     dispatch(setText(JSON.stringify(parsed)));
   }
 
+  function handleBlank() {
+    const { current } = ref;
+    const start = current?.selectionStart;
+    const end = current?.selectionEnd;
+
+    if (typeof start === "number" && typeof end === "number" && current !== null) {
+      const newText = [
+        text.substring(0, start),
+        BLANK,
+        text.substring(end),
+      ].join("");
+      dispatch(setText(newText));
+      // this sets the cursor pos after the inserted text
+      setTimeout(() => {
+        current.selectionStart = current.selectionEnd = start + BLANK.length;
+      }, 0);
+    }
+  }
+
+  function handleChange(value: string) {
+    dispatch(setText(value));
+  }
+
   return (
     <div className="flex flex-col h-screen">
       <Navbar>
-        {capitalize(property)}
+        {propertyTyCaption(property)}
       </Navbar>
       <div
         className={`main-container flex-auto flex flex-col gap-4 ${jetBrainFont.className}`}
       >
         <textarea
+          ref={ref}
           className="quiz-input flex-auto"
           autoFocus
-          onChange={e => dispatch(setText(e.target.value))}
+          onChange={e => handleChange(e.target.value)}
           value={text}
         >
         </textarea>
         <List />
 
         <div className="flex flex-wrap justify-end gap-2">
+          <button 
+            onClick={handleBlank} 
+            className={`btn ${property === "body" ? "" : "hidden"}`}
+            >...</button>
           <button 
             className={`btn ${property === "infillinators" ? "" : "hidden"}`}
             onClick={parseInfillinators}
@@ -72,7 +97,7 @@ export default function AddQuiz() {
           >
             Next
           </button>
-          <button className="btn w-28" disabled={!isReady}>
+          <button className="btn w-28" disabled={!isReady} onClick={() => router.push("/learn")}>
             Preview
           </button>
           <button className="btn w-28" disabled={!isReady}>
@@ -84,19 +109,23 @@ export default function AddQuiz() {
   );
 }
 
-function InputRadio({ property }: 
-  { property: QuizRecordPropertyType }
+function InputRadio({ property, setIsOpen }: 
+  { 
+    property: QuizRecordProperty,
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>> 
+  }
 ) {
   const currentProperty = useAppSelector(selectQuizProperty);
   const dispatch = useAppDispatch();
 
   function handleChange() {
     dispatch(setScreen(property));
+    setIsOpen(false);
   }
 
   return (
     <label className="flex gap-4 justify-between rounded-full border-2 border-main-light px-2 py-1 w-44">
-      {capitalize(property)}
+      {propertyTyCaption(property)}
       <input 
         type="radio"
         name="screen"
@@ -107,17 +136,22 @@ function InputRadio({ property }:
   )
 }
 
-function InputCheck ({ property }: { property: QuizRecordPropertyType }) {
+function InputCheck ({ property, setIsOpen }: 
+  { 
+    property: QuizRecordProperty,
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  }) {
   const dispatch = useAppDispatch();
   const checked = useAppSelector(selectIsRadio);
   
   function handleChange(e: boolean) {
     dispatch(setIsRadio(e));
+    setIsOpen(false);
   }
 
   return (
     <label className="flex gap-4 justify-between rounded-full border-2 border-main-light px-2 py-1 w-44">
-      {capitalize(property)}
+      {propertyTyCaption(property)}
       <input 
         type="checkbox"
         name="checkbox"
@@ -135,13 +169,13 @@ function Menu() {
 
 
   const inputs = properties.map((i, k) => {
-    if (UIEnum[i as keyof typeof UIEnum] === UIEnum.isRadio) {
+    if (propertyIsScreenKind(i, ScreensKind.IS_RADIO)) {
       return (
-        <InputCheck key={k} property={i as QuizRecordPropertyType} />
+        <InputCheck key={k} setIsOpen={setIsOpen}  property={i as QuizRecordProperty} />
       );
     } else {
       return (
-        <InputRadio key={k} property={i as QuizRecordPropertyType} />
+        <InputRadio key={k} setIsOpen={setIsOpen} property={i as QuizRecordProperty} />
       );
     }
   });
@@ -162,8 +196,7 @@ function List() {
   const property = useAppSelector(selectQuizProperty);
   const listItem = useAppSelector(selectQuizListItem);
   const dispatch = useAppDispatch();
-  const typeUI = UIEnum[property as keyof typeof UIEnum].valueOf();
-  const isList = typeUI === "list" || typeUI === "infillinators";
+  const isList = propertyIsScreenKind(property, ScreensKind.LIST) || propertyIsScreenKind(property, ScreensKind.INFILLINATORS)
   const hidden = isList ? "" : "hidden";
 
   return (

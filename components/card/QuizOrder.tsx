@@ -1,4 +1,4 @@
-import { selectCurrentCard, submitCardAsync } from "@/redux/features/card/cardSlice";
+import { selectCurrentCard, submitCardAsync } from "@/redux/features/card/card2Slice";
 import { checkFill } from "@/redux/features/card/utils";
 import { deleteLastPlate, initCurrentCardOrder, putToAnswer, selectAnswer, selectQuiz, selectUserAnswer } from "@/redux/features/plate/plateSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";

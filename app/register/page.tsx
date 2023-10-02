@@ -83,7 +83,7 @@ export default function Register() {
     setDisabled(false);
   }, [user, password]);
   return (
-    <div className="text-orange-200 quiz-space">
+    <div className="text-orange-200 h-screen">
       <div className="absolute flex flex-col px-6 py-4 transform -translate-x-1/2 -translate-y-1/2 w-72 bg-sky-800 top-1/2 left-1/2 rounded-2xl">
         <label className="block rounded-md" htmlFor="register-user">User:</label>
         <input maxLength={25} className="block mb-2 rounded-md quiz-input" id="register-user" type="text" name="register-user" onChange={changeUser} autoFocus />

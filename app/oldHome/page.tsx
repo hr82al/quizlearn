@@ -3,7 +3,7 @@
 import Navbar from "@/components/Navbar";
 import Results from "@/components/results";
 
-import { initCardAsync, selectCards, resetCards, setCategory, categories, selectSelectedCategories, } from "@/redux/features/card/cardSlice";
+import { initCardAsync, selectCards, resetCards, setCategory, categories, selectSelectedCategories, } from "@/redux/features/card/card2Slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { CategoryEnum } from "@prisma/client";
 import { signIn, useSession } from "next-auth/react";

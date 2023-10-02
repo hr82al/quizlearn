@@ -1,6 +1,6 @@
 "use client"
 
-import { CardNotification, selectCardNotification, selectCurrentCard } from "@/redux/features/card/cardSlice";
+import { CardNotification, selectCardNotification, selectCurrentCard } from "@/redux/features/card/card2Slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { QuizEnum } from "@prisma/client"
 import Modal from "./Modal";
