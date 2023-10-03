@@ -26,7 +26,7 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <div className="flex flex-col gap-2 flex-auto main-container text-orange-200 text-lg">
-        <div className="flex-auto">
+        <div className="flex-auto flex flex-col gap-8">
           <div className={`border-2 border-main-light p-4 rounded-2xl`} >
             <div className={`${poppins.className}`}>
               {quiz.question}
@@ -35,9 +35,11 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
             <Body />
           </div>
 
+          <div className="bg-main-dark flex-auto rounded-2xl p-4">
 
-
+          </div>
         </div>
+        
         <div className="flex justify-center">
           <button className="btn">
             Submit Answer
@@ -49,7 +51,7 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
   )
 }
 
-const MIN_WIDTH = 16;
+const MIN_WIDTH = 24;
 
 function Blank({ index }: { index: number }) {
   const pieces = useAppSelector(selectQuizPieces);
@@ -76,7 +78,7 @@ function Blank({ index }: { index: number }) {
       <input
         style={{ width }}
         onChange={(e) => handleChange(e)}
-        className="inline-block border-b bg-main-base border-main-lightest outline-none"
+        className="text-center inline-block border-b-2 bg-main-base border-main-lightest outline-none"
         value={pieces[index][0]}
       />
     </>

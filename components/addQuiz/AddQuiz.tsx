@@ -3,7 +3,7 @@ import Navbar from "../Navbar";
 import React, { useRef, useState } from "react";
 import { splitToItems } from "@/quiz/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { BLANK, QuizRecordProperty, ScreensKind, UIEnum, addItem, nextScreen, properties, propertyIsScreenKind, propertyTyCaption, selectIsRadio, selectIsReady, selectQuizListItem, selectQuizProperty, selectQuizText, setIsRadio, setListItem, setScreen, setText } from "@/redux/features/quiz/quizSlice";
+import { BLANK, QuizRecordProperty, ScreensKind, UIEnum, addItem, nextScreen, properties, propertyIsScreenKind, propertyTyCaption, selectIsRadio, selectIsReady, selectQuiz, selectQuizListItem, selectQuizProperty, selectQuizText, setCheckbox, setIsRadio, setListItem, setScreen, setText } from "@/redux/features/quiz/quizSlice";
 import { useRouter } from "next/navigation";
 import { hlog } from "../prisma";
 
@@ -140,12 +140,14 @@ function InputCheck ({ property, setIsOpen }:
   { 
     property: QuizRecordProperty,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  }) {
+  }) { 
   const dispatch = useAppDispatch();
-  const checked = useAppSelector(selectIsRadio);
+  const quiz = useAppSelector(selectQuiz);
+  const checked = quiz[property] as boolean;
   
   function handleChange(e: boolean) {
-    dispatch(setIsRadio(e));
+    // dispatch(setIsRadio(e));
+    dispatch(setCheckbox({property, value: e}));
     setIsOpen(false);
   }
 
@@ -154,7 +156,7 @@ function InputCheck ({ property, setIsOpen }:
       {propertyTyCaption(property)}
       <input 
         type="checkbox"
-        name="checkbox"
+        name={property}
         checked={checked}
         onChange={(e) => handleChange(e.target.checked)}
       />
@@ -169,7 +171,7 @@ function Menu() {
 
 
   const inputs = properties.map((i, k) => {
-    if (propertyIsScreenKind(i, ScreensKind.IS_RADIO)) {
+    if (propertyIsScreenKind(i, ScreensKind.CHECKBOX)) {
       return (
         <InputCheck key={k} setIsOpen={setIsOpen}  property={i as QuizRecordProperty} />
       );

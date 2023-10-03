@@ -1,5 +1,5 @@
+import { hlog } from "@/components/prisma";
 import { AppState, AppThunk } from "@/redux/store";
-import { QuizEnum } from "@prisma/client";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export const BLANK = "....";
@@ -31,6 +31,7 @@ export interface QuizRecord {
   infillinators: Infillinator[];
   variants: string[];
   isRadio: boolean;
+  isShort: boolean;
   answers: string[];
 }
 
@@ -40,6 +41,7 @@ const CAPTIONS = {
   infillinators: "Infillinators",
   variants: "Variants",
   isRadio: "Is Radio",
+  isShort: "Is Short",
   answers: "Answers",
 } as const;
 
@@ -68,6 +70,7 @@ export enum UIEnum {
   infillinators = ScreensKind.INFILLINATORS,
   variants = ScreensKind.LIST,
   isRadio = ScreensKind.CHECKBOX,
+  isShort = ScreensKind.CHECKBOX,
   answers = ScreensKind.LIST,
 };
 
@@ -104,6 +107,7 @@ export const EMPTY_QUIZ_RECORD: QuizRecord = {
     "['My', 'name is Khans']"
   ],
   isRadio: false,
+  isShort: false,
   answers: ["['My', 'name is Khans']"],
 };
 
@@ -219,6 +223,17 @@ export const quizSlice = createSlice({
       state.data.isRadio = action.payload;
     },
 
+    setCheckbox: (state, { payload }: PayloadAction<{property: string, value: boolean}>) => {
+      if (properties.includes(payload.property)) {
+        state.data = {
+          ...state.data,
+          [payload.property]: payload.value,
+        }
+      } else {
+        throw new Error(`Wrong property name ${payload.property}`);
+      }
+    },
+
     setListItem: (state, action: PayloadAction<string>) => {
       state.listItem = action.payload;
     },
@@ -245,6 +260,6 @@ export const selectQuizQuestion = (state: AppState) => state.quiz.data.question;
 export const selectQuizBody = (state: AppState) => state.quiz.data.body;
 export const selectQuiz = (state: AppState) => state.quiz.data;
  
-export const { saveText, toNextProperty, setText, setProperty, setIsRadio, addItem, setListItem } = quizSlice.actions;
+export const { saveText, toNextProperty, setText, setProperty, setIsRadio, addItem, setListItem, setCheckbox} = quizSlice.actions;
 
 export default quizSlice.reducer;
