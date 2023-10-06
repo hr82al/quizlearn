@@ -95,11 +95,14 @@ export function isQuizRecord(obj: object): obj is QuizRecord {
 export const EMPTY_QUIZ_RECORD: QuizRecord = {
   question: "What is the output of this code?",
   body: 
-`function greet(person: { name: string; age: number }) {
-  return "Hello " + person.name;
+`function greet(person: { name: ....; age: number }) {
+  return "Hello " .... person.name;
 }`,
   infillinators: [],
   variants: [
+    "+",
+    "string",
+    "number",
     // "['My' 'name' 'is' 'Khan']",
     // "['My name' 'is Khan']",
     // "['My' 'name' 'is' 'Khan']",
@@ -107,7 +110,7 @@ export const EMPTY_QUIZ_RECORD: QuizRecord = {
   ],
   isRadio: true,
   isShort: true,
-  answers: ["['My', 'name is Khans']"],
+  answers: ["sting number"],
 };
 
 function setQuizRecord(target: QuizRecord, key: keyof QuizRecord, value: string) {

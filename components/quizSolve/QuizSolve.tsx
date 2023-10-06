@@ -38,8 +38,12 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
       quizUI = <QuizFillShort />
       break;
     case QuizKind.INFILLINATORS:
+      break;
     case QuizKind.NONE:
+      quizUI = <div>Initialization...</div>
+      break;
     case QuizKind.SELECT_BLANKS:
+      quizUI = <QuizSelectBlanks />
       break;
     default:
       const _exhaustiveCheck: never = quizKind;
@@ -84,6 +88,22 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
   )
 }
 
+
+function QuizSelectBlanks() {
+  const variants = useAppSelector(selectQuizVariants);
+
+  const buttons = variants.map((item, idx) => {
+    return (
+      <button className="btn" key={idx}>{item}</button>
+    );
+  });
+
+  return (
+    <div className="flex items-start flex-row flex-wrap gap-8">
+      {buttons}
+    </div>
+  );
+}
 
 
 const MIN_WIDTH = 24;
