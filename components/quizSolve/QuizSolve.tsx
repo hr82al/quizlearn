@@ -2,7 +2,7 @@ import { JetBrains_Mono, Poppins } from "next/font/google";
 import Navbar from "../Navbar";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { QuizRecord} from "@/redux/features/quiz/quizSlice";
-import { QuizKind, checkAnswer, selectQuizIsCorrect, selectQuizKind, selectQuizPieces, selectQuizVariants, setQuizPiece, setQuizSolve, setRadioAnswer } from "@/redux/features/quizSolveSlice/quizSolveSlice";
+import { QuizKind, checkAnswer, selectQuizIsCorrect, selectQuizKind, selectQuizPieces, selectQuizVariants, setCheckboxAnswer, setQuizPiece, setQuizSolve, setRadioAnswer } from "@/redux/features/quizSolveSlice/quizSolveSlice";
 import { useEffect, useRef, useState } from "react";
 
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -23,6 +23,18 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
     case QuizKind.RADIO:
       quizUI = <QuizRadio />
       break;
+    case QuizKind.CHECKBOX:
+      quizUI = <QuizCheckbox />
+      break;
+    case QuizKind.FILL:
+    case QuizKind.FILL_BLANKS:
+    case QuizKind.FILL_SHORT:
+    case QuizKind.INFILLINATORS:
+    case QuizKind.NONE:
+    case QuizKind.SELECT_BLANKS:
+      break;
+    default:
+      const _exhaustiveCheck: never = quizKind;
   }
   
   return (
@@ -57,23 +69,56 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
   )
 }
 
-function QuizRadio() {
-  const variants = useAppSelector(selectQuizVariants);
+function QuizCheckbox() {
   const dispatch = useAppDispatch();
+
+  return (
+    <QuizRadioOrCheckBox 
+      type="checkbox"
+      toName={(idx?: number) => `quiz-checkbox${idx}` }
+      handleClick={(i) => dispatch(setRadioAnswer(i))}
+    />
+  );
+}
+
+function QuizRadio() {
+  const dispatch = useAppDispatch();
+  return (
+  <QuizRadioOrCheckBox 
+    type="radio"
+    toName={() => "quiz-radio"}
+    handleClick={(answer, isSet) => {
+      if (typeof isSet === "boolean") {
+        dispatch(setCheckboxAnswer({answer, isSet}));
+      }
+    }}
+  />
+  );
+}
+
+function QuizRadioOrCheckBox(
+  {
+    type,
+    toName,
+    handleClick,
+  } : {
+    type: React.HTMLInputTypeAttribute | undefined,
+    toName: (idx?: number) => string,
+    handleClick: (answer: string, isSet?: boolean) => void,
+  }) {
+  const variants = useAppSelector(selectQuizVariants);
 
   const items = variants.map((i, k) => {
     return (
       <div key={k} className="bg-main-darkest px-4 py-2 rounded-full border-2 border-main-light" >
         <input 
-          type="radio" 
-          name="quiz-radio" 
-          id={`quiz-radio${k}`} 
+          type={type} 
+          name={toName(k)}
+          id={toName(k)} 
           className="mr-2" 
-          onClick={() => {
-            dispatch(setRadioAnswer(i))
-          }}
+          onChange={e => handleClick(i, e.target.checked)}
         />
-        <label htmlFor={`quiz-radio${k}`} >{i}</label>
+        <label htmlFor={toName(k)} >{i}</label>
       </div>
     );
   });

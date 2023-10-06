@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { BLANK, EMPTY_QUIZ_RECORD, QuizRecord, saveText } from "../quiz/quizSlice";
 import { AppState } from "@/redux/store";
+import { isSet } from "util/types";
  
 
 export const BLANK_RE = new RegExp("(\\.\\.\\.\\.)");
@@ -105,6 +106,18 @@ export const quizSolveSlice = createSlice({
         state.userAnswer.push(payload);
       }
     },
+
+    setCheckboxAnswer: (state, { payload }: PayloadAction<{answer: string, isSet: boolean}>) => {
+      if (state.userAnswer.includes(payload.answer)) {
+        if (!payload.isSet) {
+          state.userAnswer = state.userAnswer.filter(e => e !== payload.answer);
+        }
+      } else {
+        if (payload.isSet) {
+          state.userAnswer.push(payload.answer);
+        }
+      }
+    },
     
     checkAnswer: (state) => {
       if (state.isCorrect === null) {
@@ -128,7 +141,7 @@ export const quizSolveSlice = createSlice({
   },
 });
 
-export const { setQuizSolve, setQuizPiece, setRadioAnswer, checkAnswer } = quizSolveSlice.actions;
+export const { setQuizSolve, setQuizPiece, setRadioAnswer, checkAnswer, setCheckboxAnswer } = quizSolveSlice.actions;
 export const selectQuizPieces = (state: AppState) => state.quizSolve.pieces;
 export const selectQuizKind = (state: AppState) => state.quizSolve.kind;
 export const selectQuizVariants = (state: AppState) => state.quizSolve.data.variants;
