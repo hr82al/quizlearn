@@ -3,9 +3,8 @@ import Navbar from "../Navbar";
 import React, { useRef, useState } from "react";
 import { splitToItems } from "@/quiz/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { BLANK, QuizRecordProperty, ScreensKind, UIEnum, addItem, nextScreen, properties, propertyIsScreenKind, propertyTyCaption, selectIsRadio, selectIsReady, selectQuiz, selectQuizListItem, selectQuizProperty, selectQuizText, setCheckbox, setIsRadio, setListItem, setScreen, setText } from "@/redux/features/quiz/quizSlice";
+import { BLANK, QuizRecordProperty, ScreensKind, addItem, nextScreen, properties, propertyIsScreenKind, propertyTyCaption, selectIsReady, selectQuiz, selectQuizListItem, selectQuizProperty, selectQuizText, setCheckbox, setListItem, setScreen, setText } from "@/redux/features/quiz/quizSlice";
 import { useRouter } from "next/navigation";
-import { hlog } from "../prisma";
 
 
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -77,7 +76,7 @@ export default function AddQuiz() {
           <button 
             onClick={handleBlank} 
             className={`btn ${property === "body" ? "" : "hidden"}`}
-            >...</button>
+            >{BLANK}</button>
           <button 
             className={`btn ${property === "infillinators" ? "" : "hidden"}`}
             onClick={parseInfillinators}

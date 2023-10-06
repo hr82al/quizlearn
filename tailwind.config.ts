@@ -10,10 +10,11 @@ const config: Config = {
     extend: {
       colors: {
         main: {
-          base: "#075985",
           light: "#38bdf8",
+          base: "#075985",
           lightest: "#bae6fd",
-          dark: "#082f49",
+          dark: "#0c4a6e",
+          darkest: "#082f49"
         }
       },
       minWidth: {

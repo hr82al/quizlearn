@@ -97,7 +97,7 @@ export const EMPTY_QUIZ_RECORD: QuizRecord = {
   question: "What is the output of this code?",
   body: 
 `function greet(person: { name: string; age: number }) {
-  return "Hello " .... person.name;
+  return "Hello " + person.name;
 }`,
   infillinators: [],
   variants: [
@@ -106,7 +106,7 @@ export const EMPTY_QUIZ_RECORD: QuizRecord = {
     "['My' 'name' 'is' 'Khan']",
     "['My', 'name is Khans']"
   ],
-  isRadio: false,
+  isRadio: true,
   isShort: false,
   answers: ["['My', 'name is Khans']"],
 };

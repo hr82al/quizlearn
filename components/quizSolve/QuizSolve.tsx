@@ -2,7 +2,7 @@ import { JetBrains_Mono, Poppins } from "next/font/google";
 import Navbar from "../Navbar";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { QuizRecord} from "@/redux/features/quiz/quizSlice";
-import { selectQuizPieces, setQuizPiece, setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
+import { QuizKind, selectQuizKind, selectQuizPieces, selectQuizVariants, setQuizPiece, setQuizSolve, setRadioAnswer } from "@/redux/features/quizSolveSlice/quizSolveSlice";
 import { useEffect, useRef, useState } from "react";
 
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -10,6 +10,7 @@ const poppins = Poppins({ weight: "400", subsets: ["latin-ext"] });
 
 export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
   const dispatch = useAppDispatch();
+  const quizKind = useAppSelector(selectQuizKind);
   
   useEffect(() => {
     dispatch(setQuizSolve(quiz));
@@ -21,11 +22,18 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
       </div>
     </div>
   )
+
+  let quizUI = (<></>);
+  switch (quizKind) {
+    case QuizKind.RADIO:
+      quizUI = <QuizRadio />
+      break;
+  }
   
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <div className="flex flex-col gap-2 flex-auto main-container text-orange-200 text-lg">
+      <div className="flex flex-col gap-2 flex-auto main-container text-orange-200 text-lg  select-none">
         <div className="flex-auto flex flex-col gap-8">
           <div className={`border-2 border-main-light p-4 rounded-2xl`} >
             <div className={`${poppins.className}`}>
@@ -35,11 +43,11 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
             <Body />
           </div>
 
-          <div className="bg-main-dark flex-auto rounded-2xl p-4">
-
+          <div className="flex justify-center flex-auto border-2 border-main-light rounded-2xl p-4">
+            {quizUI}
           </div>
         </div>
-        
+
         <div className="flex justify-center">
           <button className="btn">
             Submit Answer
@@ -49,6 +57,33 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
       </div>
     </div>
   )
+}
+
+function QuizRadio() {
+  const variants = useAppSelector(selectQuizVariants);
+  const dispatch = useAppDispatch();
+
+  const items = variants.map((i, k) => {
+    return (
+      <div key={k} className="bg-main-darkest px-4 py-2 rounded-full border-2 border-main-light" >
+        <input 
+          type="radio" 
+          name="quiz-radio" 
+          id={`quiz-radio${k}`} 
+          className="mr-2" 
+          onClick={() => {
+            dispatch(setRadioAnswer(i))
+          }}
+        />
+        <label htmlFor={`quiz-radio${k}`} >{i}</label>
+      </div>
+    );
+  });
+  return (
+    <div className="inline-flex flex-col gap-2">
+      {items}
+    </div>
+  );
 }
 
 const MIN_WIDTH = 24;
