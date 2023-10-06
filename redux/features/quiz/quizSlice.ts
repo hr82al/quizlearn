@@ -101,10 +101,10 @@ export const EMPTY_QUIZ_RECORD: QuizRecord = {
 }`,
   infillinators: [],
   variants: [
-    "['My' 'name' 'is' 'Khan']",
-    "['My name' 'is Khan']",
-    "['My' 'name' 'is' 'Khan']",
-    "['My', 'name is Khans']"
+    // "['My' 'name' 'is' 'Khan']",
+    // "['My name' 'is Khan']",
+    // "['My' 'name' 'is' 'Khan']",
+    // "['My', 'name is Khans']"
   ],
   isRadio: true,
   isShort: false,

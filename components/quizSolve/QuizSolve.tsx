@@ -27,6 +27,8 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
       quizUI = <QuizCheckbox />
       break;
     case QuizKind.FILL:
+      quizUI = <QuizFill />
+      break;
     case QuizKind.FILL_BLANKS:
     case QuizKind.FILL_SHORT:
     case QuizKind.INFILLINATORS:
@@ -69,6 +71,12 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
   )
 }
 
+function QuizFill() {
+  return (
+    <textarea name="quiz-fill" id="quiz-fill" className="quiz-input" autoFocus></textarea>
+  );
+}
+
 function QuizCheckbox() {
   const dispatch = useAppDispatch();
 
@@ -76,6 +84,7 @@ function QuizCheckbox() {
     <QuizRadioOrCheckBox 
       type="checkbox"
       toName={(idx?: number) => `quiz-checkbox${idx}` }
+      toId={(idx) => `quiz-checkbox${idx}` }
       handleClick={(i) => dispatch(setRadioAnswer(i))}
     />
   );
@@ -87,6 +96,7 @@ function QuizRadio() {
   <QuizRadioOrCheckBox 
     type="radio"
     toName={() => "quiz-radio"}
+    toId={(idx) => `quiz-radio${idx}`}
     handleClick={(answer, isSet) => {
       if (typeof isSet === "boolean") {
         dispatch(setCheckboxAnswer({answer, isSet}));
@@ -100,10 +110,12 @@ function QuizRadioOrCheckBox(
   {
     type,
     toName,
+    toId,
     handleClick,
   } : {
     type: React.HTMLInputTypeAttribute | undefined,
     toName: (idx?: number) => string,
+    toId: (idx?: number) => string,
     handleClick: (answer: string, isSet?: boolean) => void,
   }) {
   const variants = useAppSelector(selectQuizVariants);
@@ -114,11 +126,11 @@ function QuizRadioOrCheckBox(
         <input 
           type={type} 
           name={toName(k)}
-          id={toName(k)} 
+          id={toId(k)} 
           className="mr-2" 
           onChange={e => handleClick(i, e.target.checked)}
         />
-        <label htmlFor={toName(k)} >{i}</label>
+        <label htmlFor={toId(k)} >{i}</label>
       </div>
     );
   });
