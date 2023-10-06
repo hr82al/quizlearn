@@ -64,6 +64,7 @@ export default function AddQuiz() {
       >
         <textarea
           ref={ref}
+          id="add-quiz-text"
           className="quiz-input flex-auto"
           autoFocus
           onChange={e => handleChange(e.target.value)}
@@ -202,6 +203,7 @@ function List() {
 
   return (
     <textarea
+      id="add-quiz-list"
       className={`quiz-input h-1/5 ${hidden}`}
       value={listItem}
       onChange={(e) => dispatch(setListItem(e.target.value))}

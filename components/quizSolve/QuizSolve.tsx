@@ -110,6 +110,7 @@ function Blank({ index }: { index: number }) {
       <span className="absolute -top-1/2" ref={ref}>{pieces[index][0]}</span>
       <input
         style={{ width }}
+        id={`blank${index}`}
         onChange={(e) => handleChange(e)}
         className="text-center inline-block border-b-2 bg-main-base border-main-lightest outline-none"
         value={pieces[index][0]}
@@ -150,10 +151,11 @@ function QuizBody() {
 
 
 function QuizResult() {
+  const isCorrect = useAppSelector(selectQuizIsCorrect);
   return (
 <div className="fixed inset-0 bg-gray-600 bg-opacity-70 overflow-y-auto h-full w-full">
-  <div className="fixed  py-14 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 px-8 bg-main-darkest animate-result rounded-2xl">
-    Incorrect
+  <div className="fixed  py-14 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 px-8 bg-main-darkest animate-result rounded-full border-4 border-main-light">
+    {isCorrect ? "Correct" : "Incorrect"}
   </div>
 </div>
   );
