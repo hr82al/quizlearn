@@ -1,4 +1,3 @@
-import { hlog } from "@/components/prisma";
 import { AppState, AppThunk } from "@/redux/store";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
@@ -97,7 +96,7 @@ export const EMPTY_QUIZ_RECORD: QuizRecord = {
   question: "What is the output of this code?",
   body: 
 `function greet(person: { name: string; age: number }) {
-  return "Hello " .... person.name;
+  return "Hello " + person.name;
 }`,
   infillinators: [],
   variants: [
@@ -107,7 +106,7 @@ export const EMPTY_QUIZ_RECORD: QuizRecord = {
     // "['My', 'name is Khans']"
   ],
   isRadio: true,
-  isShort: false,
+  isShort: true,
   answers: ["['My', 'name is Khans']"],
 };
 

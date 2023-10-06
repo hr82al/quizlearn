@@ -21,7 +21,7 @@ const MIN_WIDTH = 24;
 
 function Blank({ index }: { index: number }) {
   const pieces = useAppSelector(selectQuizPieces);
-  const [width, setWidth] = useState(10);
+  const [width, setWidth] = useState(MIN_WIDTH);
   const dispatch = useAppDispatch();
   const ref = useRef<HTMLSpanElement>(null);
 

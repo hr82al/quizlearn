@@ -52,7 +52,8 @@ type StateType = {
   data:QuizRecord,
   kind: QuizKind,
   pieces: [string, boolean] [],
-  userAnswer: string[],
+  userAnswers: string[],
+  userAnswer: string,
   isCorrect: boolean | null,
 }
 
@@ -60,15 +61,16 @@ const initialState: StateType = {
   data: EMPTY_QUIZ_RECORD,
   kind: QuizKind.NONE,
   pieces: [],
-  userAnswer: [],
+  userAnswers: [],
+  userAnswer: "",
   isCorrect: null,
 }
 
 
 function radioQuizCheckAnswer(state: StateType): boolean {
-  if (state.userAnswer.length > 0) {
+  if (state.userAnswers.length > 0) {
     state.data.answers.forEach(answer => {
-      if (state.userAnswer[0] === answer) {
+      if (state.userAnswers[0] === answer) {
         return true;
       }
     });
@@ -99,22 +101,18 @@ export const quizSolveSlice = createSlice({
       state.pieces[payload.index] = [payload.text, state.pieces[payload.index][1]]; 
     },
 
-    setRadioAnswer: (state, { payload }: PayloadAction<string>) => {
-      if (state.userAnswer.length > 0) {
-        state.userAnswer[0] === payload;
-      } else {
-        state.userAnswer.push(payload);
-      }
+    setAnswer: (state, { payload }: PayloadAction<string>) => {
+      state.userAnswer = payload;
     },
 
     setCheckboxAnswer: (state, { payload }: PayloadAction<{answer: string, isSet: boolean}>) => {
-      if (state.userAnswer.includes(payload.answer)) {
+      if (state.userAnswers.includes(payload.answer)) {
         if (!payload.isSet) {
-          state.userAnswer = state.userAnswer.filter(e => e !== payload.answer);
+          state.userAnswers = state.userAnswers.filter(e => e !== payload.answer);
         }
       } else {
         if (payload.isSet) {
-          state.userAnswer.push(payload.answer);
+          state.userAnswers.push(payload.answer);
         }
       }
     },
@@ -141,11 +139,13 @@ export const quizSolveSlice = createSlice({
   },
 });
 
-export const { setQuizSolve, setQuizPiece, setRadioAnswer, checkAnswer, setCheckboxAnswer } = quizSolveSlice.actions;
+export const { setQuizSolve, setQuizPiece, setAnswer, checkAnswer, setCheckboxAnswer } = quizSolveSlice.actions;
 export const selectQuizPieces = (state: AppState) => state.quizSolve.pieces;
 export const selectQuizKind = (state: AppState) => state.quizSolve.kind;
 export const selectQuizVariants = (state: AppState) => state.quizSolve.data.variants;
 export const selectQuizIsCorrect = (state: AppState) => state.quizSolve.isCorrect;
 export const selectQuizBody = (state: AppState) => state.quizSolve.data.body;
+export const selectQuizUserAnswers = (state:AppState) => state.quizSolve.userAnswers;
+export const selectQuizUserAnswer = (state: AppState) => state.quizSolve.userAnswer
 
 export default quizSolveSlice.reducer;

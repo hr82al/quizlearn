@@ -2,8 +2,8 @@ import { JetBrains_Mono, Poppins } from "next/font/google";
 import Navbar from "../Navbar";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { QuizRecord} from "@/redux/features/quiz/quizSlice";
-import { QuizKind, checkAnswer, selectQuizBody, selectQuizIsCorrect, selectQuizKind,  selectQuizVariants, setCheckboxAnswer, setQuizSolve, setRadioAnswer } from "@/redux/features/quizSolveSlice/quizSolveSlice";
-import { useEffect } from "react";
+import { QuizKind, checkAnswer, selectQuizBody, selectQuizIsCorrect, selectQuizKind,  selectQuizUserAnswer,  selectQuizVariants, setAnswer, setCheckboxAnswer, setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
+import { useEffect, useRef, useState } from "react";
 import { QuizFillBlanks } from "./QuizFillBlanks";
 
 export const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -35,6 +35,8 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
       quizUI = <QuizFillBlanks />
       break;
     case QuizKind.FILL_SHORT:
+      quizUI = <QuizFillShort />
+      break;
     case QuizKind.INFILLINATORS:
     case QuizKind.NONE:
     case QuizKind.SELECT_BLANKS:
@@ -52,15 +54,15 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
             <div className={`${poppins.className}`}>
               {quiz.question}
             </div>
-            {quizKind !== QuizKind.NONE && quizKind !== QuizKind.FILL_BLANKS  && (
+            {quizKind !== QuizKind.NONE && quizKind !== QuizKind.FILL_BLANKS && quizBody.trim().length > 0 && (
               <>
-              <hr className="border-main-light border-2 rounded-full w-11/12 mx-auto my-2" />
-              <div className={jetBrainFont.className}>
-                {quizBody}
-              </div>
-              </>            
+                <hr className="border-main-light border-2 rounded-full w-11/12 mx-auto my-2" />
+                <pre className={`break-all whitespace-pre-wrap ${jetBrainFont.className}`}>
+                  {quizBody}
+                </pre>
+              </>
             )}
-            
+
           </div>
 
           <div className="flex justify-center flex-auto border-2 border-main-light rounded-2xl p-4">
@@ -69,7 +71,7 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
         </div>
 
         <div className="flex justify-center">
-          <button 
+          <button
             className="btn"
             onClick={() => dispatch(checkAnswer())}
           >
@@ -80,6 +82,45 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
       </div>
     </div>
   )
+}
+
+
+
+const MIN_WIDTH = 24;
+
+function QuizFillShort() {
+  const [width, setWidth] = useState(MIN_WIDTH);
+  const dispatch = useAppDispatch();
+  const ref = useRef<HTMLSpanElement>(null);
+  const userAnswer = useAppSelector(selectQuizUserAnswer);
+
+
+
+  useEffect(() => {
+    if (typeof ref.current?.offsetWidth === "number") {
+      const tmp = ref.current.offsetWidth < MIN_WIDTH ? MIN_WIDTH : ref.current.offsetWidth;
+      setWidth(tmp);
+    }
+  }, [userAnswer]);
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    dispatch(setAnswer(e.target.value));
+  }
+
+
+  return (
+    <div>
+      <span className="fixed -top-1/2 " ref={ref}>{userAnswer}</span>
+      <input
+        style={{ width }}
+        id="userAnswer"
+        onChange={(e) => handleChange(e)}
+        spellCheck={false}
+        className="text-center border-b-2 bg-main-base border-main-lightest outline-none"
+        value={userAnswer}
+      />
+    </div>
+  );
 }
 
 function QuizFill() {
@@ -96,7 +137,7 @@ function QuizCheckbox() {
       type="checkbox"
       toName={(idx?: number) => `quiz-checkbox${idx}` }
       toId={(idx) => `quiz-checkbox${idx}` }
-      handleClick={(i) => dispatch(setRadioAnswer(i))}
+      handleClick={(i) => dispatch(setAnswer(i))}
     />
   );
 }
