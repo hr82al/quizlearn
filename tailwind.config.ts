@@ -20,7 +20,16 @@ const config: Config = {
       minWidth: {
         '8': '2rem',
         '4': '1rem',
-      }
+      },
+      keyframes: {
+        result: {
+          '0%': { top: '-10%' },
+          '100%': { top: '50%'},
+        }
+      },
+      animation: {
+        'result': 'result 2s',
+      },
     },
   },
   plugins: [],

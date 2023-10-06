@@ -132,5 +132,6 @@ export const { setQuizSolve, setQuizPiece, setRadioAnswer, checkAnswer } = quizS
 export const selectQuizPieces = (state: AppState) => state.quizSolve.pieces;
 export const selectQuizKind = (state: AppState) => state.quizSolve.kind;
 export const selectQuizVariants = (state: AppState) => state.quizSolve.data.variants;
+export const selectQuizIsCorrect = (state: AppState) => state.quizSolve.isCorrect;
 
 export default quizSolveSlice.reducer;

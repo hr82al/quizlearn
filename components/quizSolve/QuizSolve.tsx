@@ -2,7 +2,7 @@ import { JetBrains_Mono, Poppins } from "next/font/google";
 import Navbar from "../Navbar";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { QuizRecord} from "@/redux/features/quiz/quizSlice";
-import { QuizKind, selectQuizKind, selectQuizPieces, selectQuizVariants, setQuizPiece, setQuizSolve, setRadioAnswer } from "@/redux/features/quizSolveSlice/quizSolveSlice";
+import { QuizKind, checkAnswer, selectQuizIsCorrect, selectQuizKind, selectQuizPieces, selectQuizVariants, setQuizPiece, setQuizSolve, setRadioAnswer } from "@/redux/features/quizSolveSlice/quizSolveSlice";
 import { useEffect, useRef, useState } from "react";
 
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -11,17 +11,12 @@ const poppins = Poppins({ weight: "400", subsets: ["latin-ext"] });
 export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
   const dispatch = useAppDispatch();
   const quizKind = useAppSelector(selectQuizKind);
+  const isCorrect = useAppSelector(selectQuizIsCorrect);
   
   useEffect(() => {
     dispatch(setQuizSolve(quiz));
   },[]);
 
-  const selectUI = (
-    <div className={`border-2 border-main-light p-4 rounded-2xl`} >
-      <div className={`${poppins.className}`}>
-      </div>
-    </div>
-  )
 
   let quizUI = (<></>);
   switch (quizKind) {
@@ -40,7 +35,7 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
               {quiz.question}
             </div>
             <hr className="border-main-light border-2 rounded-full w-11/12 mx-auto my-2" />
-            <Body />
+            <QuizBody />
           </div>
 
           <div className="flex justify-center flex-auto border-2 border-main-light rounded-2xl p-4">
@@ -49,11 +44,14 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
         </div>
 
         <div className="flex justify-center">
-          <button className="btn">
+          <button 
+            className="btn"
+            onClick={() => dispatch(checkAnswer())}
+          >
             Submit Answer
           </button>
         </div>
-
+        {typeof isCorrect === "boolean" && <QuizResult />}
       </div>
     </div>
   )
@@ -138,7 +136,7 @@ function PreformattedOrBlank({ index }: { index: number }) {
   }
 }
 
-function Body() {
+function QuizBody() {
   const pieces = useAppSelector(selectQuizPieces);
   const items = pieces.map((item, index) => <PreformattedOrBlank key={index} index={index} />);
 
@@ -150,3 +148,13 @@ function Body() {
   );
 }
 
+
+function QuizResult() {
+  return (
+<div className="fixed inset-0 bg-gray-600 bg-opacity-70 overflow-y-auto h-full w-full">
+  <div className="fixed  py-14 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 px-8 bg-main-darkest animate-result rounded-2xl">
+    Incorrect
+  </div>
+</div>
+  );
+}
