@@ -2,7 +2,7 @@ import { JetBrains_Mono, Poppins } from "next/font/google";
 import Navbar from "../Navbar";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { QuizRecord} from "@/redux/features/quiz/quizSlice";
-import { QuizKind, checkAnswer, selectQuizIsCorrect, selectQuizKind,  selectQuizQuestion,  selectQuizUserAnswer,  selectQuizVariants, setAnswer, setCheckboxAnswer, setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
+import { QuizKind, checkAnswerAsync, selectQuizIsCorrect, selectQuizKind,  selectQuizQuestion,  selectQuizUserAnswer,  selectQuizVariants, setAnswer, setCheckboxAnswer, setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
 import { useEffect, useRef, useState } from "react";
 import { QuizFillBlanks } from "./QuizFillBlanks";
 
@@ -52,16 +52,16 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
       <Navbar />
       <div className="flex flex-col gap-2 flex-auto main-container text-orange-200 text-lg  select-none">
         <div className="flex-auto flex flex-col gap-8">
-          <div className={`border-2 border-main-light p-4 rounded-2xl`} >
-            {quizKind !== QuizKind.NONE && quizKind !== QuizKind.FILL_BLANKS && question.trim().length > 0 && (
-              <>
-                <pre className={`break-all whitespace-pre-wrap ${jetBrainFont.className}`}>
-                  {question}
-                </pre>
-              </>
-            )}
 
-          </div>
+          {quizKind !== QuizKind.NONE && quizKind !== QuizKind.FILL_BLANKS && question.trim().length > 0 && (
+            <div className={`border-2 border-main-light p-4 rounded-2xl`} >
+              <pre className={`break-all whitespace-pre-wrap ${jetBrainFont.className}`}>
+                {question}
+              </pre>
+            </div>
+          )}
+
+
 
           <div className="flex justify-center flex-auto border-2 border-main-light rounded-2xl p-4">
             {quizUI}
@@ -71,7 +71,7 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
         <div className="flex justify-center">
           <button
             className="btn"
-            onClick={() => dispatch(checkAnswer())}
+            onClick={() => dispatch(checkAnswerAsync())}
           >
             Submit Answer
           </button>
@@ -165,7 +165,7 @@ function QuizRadio() {
     toId={(idx) => `quiz-radio${idx}`}
     handleClick={(answer, isSet) => {
       if (typeof isSet === "boolean") {
-        dispatch(setCheckboxAnswer({answer, isSet}));
+        dispatch(setAnswer(answer));
       }
     }}
   />

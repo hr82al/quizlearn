@@ -1,7 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { BLANK, EMPTY_QUIZ_RECORD, QuizRecord, saveText } from "../quiz/quizSlice";
-import { AppState } from "@/redux/store";
-import { isSet } from "util/types";
+import { BLANK, EMPTY_QUIZ_RECORD, QuizRecord } from "../quiz/quizSlice";
+import { AppState, AppThunk } from "@/redux/store";
  
 
 export const BLANK_RE = new RegExp("(\\.\\.\\.\\.)");
@@ -64,15 +63,42 @@ const initialState: StateType = {
 
 
 function radioQuizCheckAnswer(state: StateType): boolean {
-  if (state.userAnswers.length > 0) {
-    state.data.answers.forEach(answer => {
-      if (state.userAnswers[0] === answer) {
+  if (state.userAnswer.length > 0) {
+    for (let i = 0; i < state.data.answers.length; i++){
+      const answer = state.data.answers[i];
+      if (state.userAnswer === answer) {
         return true;
       }
-    });
+    }
   }
   return false;
 }
+
+export const checkAnswerAsync = (): AppThunk =>
+  (dispatch, getState) => {
+    const state = getState().quizSolve;
+    if (state.isCorrect === null) {
+      switch (state.kind) {
+        case QuizKind.RADIO:
+          dispatch(setIsCorrect(radioQuizCheckAnswer(state)))
+          break;
+        case QuizKind.CHECKBOX:
+        case QuizKind.FILL:
+        case QuizKind.FILL_BLANKS:
+        case QuizKind.FILL_SHORT:
+        case QuizKind.NONE:
+        case QuizKind.SELECT_BLANKS:
+          break;
+        default:
+          const _exhaustiveCheck: never = state.kind;
+      }
+    }
+
+    // TODO change after testing
+    setTimeout(() => {
+      dispatch(setIsCorrect(null));
+    }, 3000);
+  };
 
 export const quizSolveSlice = createSlice({
   name: "quizSolve",
@@ -112,29 +138,14 @@ export const quizSolveSlice = createSlice({
         }
       }
     },
-    
-    checkAnswer: (state) => {
-      if (state.isCorrect === null) {
-        switch (state.kind) {
-          case QuizKind.RADIO:
-            state.isCorrect = radioQuizCheckAnswer(state);
-            break;
-          case QuizKind.CHECKBOX:
-          case QuizKind.FILL:
-          case QuizKind.FILL_BLANKS:
-          case QuizKind.FILL_SHORT:
-          case QuizKind.NONE:
-          case QuizKind.SELECT_BLANKS:
-            break;
-          default:
-            const _exhaustiveCheck: never = state.kind;
-        }
-      }
+
+    setIsCorrect: (state, { payload }: PayloadAction<boolean | null>) => {
+      state.isCorrect = payload;
     },
   },
 });
 
-export const { setQuizSolve, setQuizPiece, setAnswer, checkAnswer, setCheckboxAnswer } = quizSolveSlice.actions;
+export const { setQuizSolve, setQuizPiece, setAnswer, setCheckboxAnswer, setIsCorrect } = quizSolveSlice.actions;
 export const selectQuizPieces = (state: AppState) => state.quizSolve.pieces;
 export const selectQuizKind = (state: AppState) => state.quizSolve.kind;
 export const selectQuizVariants = (state: AppState) => state.quizSolve.data.variants;

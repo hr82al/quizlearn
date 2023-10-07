@@ -1,6 +1,7 @@
 import { hlog } from "@/components/prisma";
 import { AppState, AppThunk } from "@/redux/store";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { defaultQuiz } from "./test-data";
 
 
 export const BLANK = "....";
@@ -17,6 +18,26 @@ export interface QuizRecord {
   isShort: boolean;
   answers: string[];
 }
+
+export const EMPTY_QUIZ_RECORD: QuizRecord = defaultQuiz;
+ /* {
+  question: `What is the output of this code?",
+function greet(person: { name: ....; age: number }) {
+  return "Hello " .... person.name;
+}`,
+  variants: [
+    "+",
+    "string",
+    "number",
+    // "['My' 'name' 'is' 'Khan']",
+    // "['My name' 'is Khan']",
+    // "['My' 'name' 'is' 'Khan']",
+    // "['My', 'name is Khans']"
+  ],
+  isRadio: true,
+  isShort: true,
+  answers: ["sting number"],
+}; */
 
 const CAPTIONS = {
   question: "Question",
@@ -68,25 +89,6 @@ export function isQuizRecord(obj: object): obj is QuizRecord {
     quizRecord.variants.every(i => typeof i === "string") &&
     typeof quizRecord.isRadio === "boolean";
 }
-
-export const EMPTY_QUIZ_RECORD: QuizRecord = {
-  question: `What is the output of this code?",
-function greet(person: { name: ....; age: number }) {
-  return "Hello " .... person.name;
-}`,
-  variants: [
-    "+",
-    "string",
-    "number",
-    // "['My' 'name' 'is' 'Khan']",
-    // "['My name' 'is Khan']",
-    // "['My' 'name' 'is' 'Khan']",
-    // "['My', 'name is Khans']"
-  ],
-  isRadio: true,
-  isShort: true,
-  answers: ["sting number"],
-};
 
 function setQuizRecord(target: QuizRecord, key: keyof QuizRecord, value: string) {
   let parsed_value: string | string[] | boolean | undefined = undefined;
