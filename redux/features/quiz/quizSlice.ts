@@ -1,3 +1,4 @@
+import { hlog } from "@/components/prisma";
 import { AppState, AppThunk } from "@/redux/store";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
@@ -191,8 +192,13 @@ export const setScreen = (property: QuizRecordProperty): AppThunk =>
 
 export const nextScreen = (): AppThunk => 
   (dispatch, getState) => {
-    const idx = (properties.indexOf(getState().quiz.property) + 1) % LENGTH;
-    const property = properties[idx] as QuizRecordProperty;
+    let idx = properties.indexOf(getState().quiz.property);
+    let property: keyof QuizRecord;
+    do {
+      idx = (idx + 1) % LENGTH;
+      property = properties[idx] as QuizRecordProperty;
+    } while (typeof EMPTY_QUIZ_RECORD[property] === "boolean");
+    
     dispatch(setScreen(property));
   }
 
