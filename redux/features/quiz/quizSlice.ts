@@ -250,6 +250,11 @@ export const quizSlice = createSlice({
       state.text = JSON.stringify(JSON.parse(state.text).concat(state.listItem));
       state.listItem = "";
     },
+
+    addItems: (state, { payload }: PayloadAction<string[]>) => {
+      state.text = JSON.stringify(JSON.parse(state.text).concat(payload));
+      state.listItem = "";
+    },
   }
 });
 
@@ -268,6 +273,6 @@ export const selectQuizQuestion = (state: AppState) => state.quiz.data.question;
 export const selectQuizBody = (state: AppState) => state.quiz.data.body;
 export const selectQuiz = (state: AppState) => state.quiz.data;
  
-export const { saveText, toNextProperty, setText, setProperty, setIsRadio, addItem, setListItem, setCheckbox} = quizSlice.actions;
+export const { saveText, toNextProperty, setText, setProperty, setIsRadio, addItem, addItems, setListItem, setCheckbox} = quizSlice.actions;
 
 export default quizSlice.reducer;

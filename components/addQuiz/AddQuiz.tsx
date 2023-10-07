@@ -3,7 +3,7 @@ import Navbar from "../Navbar";
 import React, { useRef, useState } from "react";
 import { splitToItems } from "@/quiz/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { BLANK, QuizRecordProperty, ScreensKind, addItem, nextScreen, properties, propertyIsScreenKind, propertyTyCaption, selectIsReady, selectQuiz, selectQuizListItem, selectQuizProperty, selectQuizText, setCheckbox, setListItem, setScreen, setText } from "@/redux/features/quiz/quizSlice";
+import { BLANK, QuizRecordProperty, ScreensKind, addItem, addItems, nextScreen, properties, propertyIsScreenKind, propertyTyCaption, selectIsReady, selectQuiz, selectQuizListItem, selectQuizProperty, selectQuizText, setCheckbox, setListItem, setScreen, setText } from "@/redux/features/quiz/quizSlice";
 import { useRouter } from "next/navigation";
 
 
@@ -28,7 +28,12 @@ export default function AddQuiz() {
 
   function parseInfillinators() {
     const parsed = splitToItems(listItem);
-    dispatch(setText(JSON.stringify(parsed)));
+    let variants: string[] = [];
+    parsed.forEach(item => {
+      variants = variants.concat(item[1]);
+    })
+    // dispatch(setText(JSON.stringify(parsed)));
+    dispatch(addItems(variants));
   }
 
   function handleBlank() {
@@ -79,7 +84,7 @@ export default function AddQuiz() {
             className={`btn ${property === "body" ? "" : "hidden"}`}
             >{BLANK}</button>
           <button 
-            className={`btn ${property === "infillinators" ? "" : "hidden"}`}
+            className={`btn ${property === "variants" ? "" : "hidden"}`}
             onClick={parseInfillinators}
           >
             Parse infillinator
