@@ -12,7 +12,6 @@ function isStringList(obj: object): obj is string[] {
 
 export interface QuizRecord {
   question: string;
-  body: string;
   variants: string[];
   isRadio: boolean;
   isShort: boolean;
@@ -65,16 +64,14 @@ export function propertyIsScreenKind(propertyName: string, kind: ScreensKind) {
 export function isQuizRecord(obj: object): obj is QuizRecord {
   const quizRecord = obj as QuizRecord;
   return quizRecord.question !== undefined &&
-    quizRecord.body !== undefined &&
     Array.isArray(quizRecord.variants) &&
     quizRecord.variants.every(i => typeof i === "string") &&
     typeof quizRecord.isRadio === "boolean";
 }
 
 export const EMPTY_QUIZ_RECORD: QuizRecord = {
-  question: "What is the output of this code?",
-  body: 
-`function greet(person: { name: ....; age: number }) {
+  question: `What is the output of this code?",
+function greet(person: { name: ....; age: number }) {
   return "Hello " .... person.name;
 }`,
   variants: [
@@ -236,7 +233,6 @@ export const selectIsReady = (state: AppState) => {
   return state.quiz.data.question.length > 0 && state.quiz.data.answers.length > 0;
 }
 export const selectQuizQuestion = (state: AppState) => state.quiz.data.question;
-export const selectQuizBody = (state: AppState) => state.quiz.data.body;
 export const selectQuiz = (state: AppState) => state.quiz.data;
  
 export const { saveText, toNextProperty, setText, setProperty, setIsRadio, addItem, addItems, setListItem, setCheckbox} = quizSlice.actions;

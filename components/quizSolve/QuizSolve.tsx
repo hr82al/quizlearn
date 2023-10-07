@@ -2,18 +2,18 @@ import { JetBrains_Mono, Poppins } from "next/font/google";
 import Navbar from "../Navbar";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { QuizRecord} from "@/redux/features/quiz/quizSlice";
-import { QuizKind, checkAnswer, selectQuizBody, selectQuizIsCorrect, selectQuizKind,  selectQuizUserAnswer,  selectQuizVariants, setAnswer, setCheckboxAnswer, setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
+import { QuizKind, checkAnswer, selectQuizIsCorrect, selectQuizKind,  selectQuizQuestion,  selectQuizUserAnswer,  selectQuizVariants, setAnswer, setCheckboxAnswer, setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
 import { useEffect, useRef, useState } from "react";
 import { QuizFillBlanks } from "./QuizFillBlanks";
 
 export const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
-const poppins = Poppins({ weight: "400", subsets: ["latin-ext"] });
+
 
 export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
   const dispatch = useAppDispatch();
   const quizKind = useAppSelector(selectQuizKind);
   const isCorrect = useAppSelector(selectQuizIsCorrect);
-  const quizBody = useAppSelector(selectQuizBody);
+  const question = useAppSelector(selectQuizQuestion);
   
   useEffect(() => {
     dispatch(setQuizSolve(quiz));
@@ -37,8 +37,6 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
     case QuizKind.FILL_SHORT:
       quizUI = <QuizFillShort />
       break;
-    case QuizKind.INFILLINATORS:
-      break;
     case QuizKind.NONE:
       quizUI = <div>Initialization...</div>
       break;
@@ -55,14 +53,10 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
       <div className="flex flex-col gap-2 flex-auto main-container text-orange-200 text-lg  select-none">
         <div className="flex-auto flex flex-col gap-8">
           <div className={`border-2 border-main-light p-4 rounded-2xl`} >
-            <div className={`${poppins.className}`}>
-              {quiz.question}
-            </div>
-            {quizKind !== QuizKind.NONE && quizKind !== QuizKind.FILL_BLANKS && quizBody.trim().length > 0 && (
+            {quizKind !== QuizKind.NONE && quizKind !== QuizKind.FILL_BLANKS && question.trim().length > 0 && (
               <>
-                <hr className="border-main-light border-2 rounded-full w-11/12 mx-auto my-2" />
                 <pre className={`break-all whitespace-pre-wrap ${jetBrainFont.className}`}>
-                  {quizBody}
+                  {question}
                 </pre>
               </>
             )}

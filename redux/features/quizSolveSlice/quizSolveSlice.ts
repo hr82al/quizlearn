@@ -21,8 +21,6 @@ export const enum QuizKind {
   RADIO,
   // We do not have blanks but have variants and isRadio is false
   CHECKBOX,
-  // We have infillinators
-  INFILLINATORS,
 } 
 
 function detectQuizKind(quiz: QuizRecord, blanksNum: number): QuizKind {
@@ -82,7 +80,7 @@ export const quizSolveSlice = createSlice({
   reducers: {
     setQuizSolve: (state, action: PayloadAction<QuizRecord>) => {
       state.data = action.payload;
-      let tmp = action.payload.body.split(BLANK_RE);
+      let tmp = action.payload.question.split(BLANK_RE);
       let blanks_num = 0
       state.pieces = tmp.map(i => {
         if (i === BLANK) {
@@ -125,7 +123,6 @@ export const quizSolveSlice = createSlice({
           case QuizKind.FILL:
           case QuizKind.FILL_BLANKS:
           case QuizKind.FILL_SHORT:
-          case QuizKind.INFILLINATORS:
           case QuizKind.NONE:
           case QuizKind.SELECT_BLANKS:
             break;
@@ -142,8 +139,8 @@ export const selectQuizPieces = (state: AppState) => state.quizSolve.pieces;
 export const selectQuizKind = (state: AppState) => state.quizSolve.kind;
 export const selectQuizVariants = (state: AppState) => state.quizSolve.data.variants;
 export const selectQuizIsCorrect = (state: AppState) => state.quizSolve.isCorrect;
-export const selectQuizBody = (state: AppState) => state.quizSolve.data.body;
 export const selectQuizUserAnswers = (state:AppState) => state.quizSolve.userAnswers;
-export const selectQuizUserAnswer = (state: AppState) => state.quizSolve.userAnswer
+export const selectQuizUserAnswer = (state: AppState) => state.quizSolve.userAnswer;
+export const selectQuizQuestion = (state: AppState) => state.quizSolve.data.question;
 
 export default quizSolveSlice.reducer;

@@ -32,7 +32,6 @@ export default function AddQuiz() {
     parsed.forEach(item => {
       variants = variants.concat(item[1]);
     })
-    // dispatch(setText(JSON.stringify(parsed)));
     dispatch(addItems(variants));
   }
 
@@ -81,7 +80,7 @@ export default function AddQuiz() {
         <div className="flex flex-wrap justify-end gap-2">
           <button 
             onClick={handleBlank} 
-            className={`btn ${property === "body" ? "" : "hidden"}`}
+            className={`btn ${property === "question" ? "" : "hidden"}`}
             >{BLANK}</button>
           <button 
             className={`btn ${property === "variants" ? "" : "hidden"}`}
