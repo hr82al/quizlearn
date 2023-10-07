@@ -26,9 +26,7 @@ export const enum QuizKind {
 } 
 
 function detectQuizKind(quiz: QuizRecord, blanksNum: number): QuizKind {
-  if (quiz.infillinators.length > 0) {
-    return QuizKind.INFILLINATORS
-  }else if (blanksNum > 0 && quiz.variants.length === 0) {
+  if (blanksNum > 0 && quiz.variants.length === 0) {
     return QuizKind.FILL_BLANKS;
   } else if (blanksNum > 0 && quiz.variants.length > 0) {
     return QuizKind.SELECT_BLANKS;

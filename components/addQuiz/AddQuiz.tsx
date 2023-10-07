@@ -203,7 +203,7 @@ function List() {
   const property = useAppSelector(selectQuizProperty);
   const listItem = useAppSelector(selectQuizListItem);
   const dispatch = useAppDispatch();
-  const isList = propertyIsScreenKind(property, ScreensKind.LIST) || propertyIsScreenKind(property, ScreensKind.INFILLINATORS)
+  const isList = propertyIsScreenKind(property, ScreensKind.LIST)
   const hidden = isList ? "" : "hidden";
 
   return (

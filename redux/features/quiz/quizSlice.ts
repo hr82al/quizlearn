@@ -2,33 +2,17 @@ import { hlog } from "@/components/prisma";
 import { AppState, AppThunk } from "@/redux/store";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
+
 export const BLANK = "....";
 
-export type Infillinator = [string, string[]];
-
-function isInfillinator(obj: object): obj is Infillinator {
-  if (Array.isArray(obj)) {
-    if (obj.length === 0) {
-      return true;
-    } else if (obj.every(i => i.length == 2 && typeof i[0] === "string" && isStringList(i[1]))) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return false;
-  }
-}
 
 function isStringList(obj: object): obj is string[] {
   return Array.isArray(obj) && obj.every(i => typeof i === "string");
 }
 
-
 export interface QuizRecord {
   question: string;
   body: string;
-  infillinators: Infillinator[];
   variants: string[];
   isRadio: boolean;
   isShort: boolean;
@@ -38,7 +22,6 @@ export interface QuizRecord {
 const CAPTIONS = {
   question: "Question",
   body: "Body",
-  infillinators: "Infillinators",
   variants: "Variants",
   isRadio: "Is Radio",
   isShort: "Is Short",
@@ -58,7 +41,6 @@ export type QuizRecordProperty = keyof QuizRecord
 export const enum ScreensKind {
   TEXT = "TEXT",
   BLANKED_TEXT = "BLANKED_TEXT",
-  INFILLINATORS = "INFILLINATORS",
   LIST = "LIST",
   CHECKBOX = "CHECKBOX",
   IS_RADIO = "IS_RADIO",
@@ -67,7 +49,6 @@ export const enum ScreensKind {
 export enum UIEnum {
   question = ScreensKind.TEXT,
   body = ScreensKind.BLANKED_TEXT,
-  infillinators = ScreensKind.INFILLINATORS,
   variants = ScreensKind.LIST,
   isRadio = ScreensKind.CHECKBOX,
   isShort = ScreensKind.CHECKBOX,
@@ -85,12 +66,9 @@ export function isQuizRecord(obj: object): obj is QuizRecord {
   const quizRecord = obj as QuizRecord;
   return quizRecord.question !== undefined &&
     quizRecord.body !== undefined &&
-    quizRecord.infillinators !== undefined &&
     Array.isArray(quizRecord.variants) &&
     quizRecord.variants.every(i => typeof i === "string") &&
-    typeof quizRecord.isRadio === "boolean" &&
-    Array.isArray(quizRecord.infillinators) &&
-    quizRecord.infillinators.every(i => isInfillinator(i));
+    typeof quizRecord.isRadio === "boolean";
 }
 
 export const EMPTY_QUIZ_RECORD: QuizRecord = {
@@ -99,7 +77,6 @@ export const EMPTY_QUIZ_RECORD: QuizRecord = {
 `function greet(person: { name: ....; age: number }) {
   return "Hello " .... person.name;
 }`,
-  infillinators: [],
   variants: [
     "+",
     "string",
@@ -115,7 +92,7 @@ export const EMPTY_QUIZ_RECORD: QuizRecord = {
 };
 
 function setQuizRecord(target: QuizRecord, key: keyof QuizRecord, value: string) {
-  let parsed_value: Infillinator | string | string[] | boolean | undefined = undefined;
+  let parsed_value: string | string[] | boolean | undefined = undefined;
   if (typeof target[key] === "string") {
     parsed_value = value;
   } else if (key === "variants" || key === "answers") {
@@ -129,17 +106,6 @@ function setQuizRecord(target: QuizRecord, key: keyof QuizRecord, value: string)
     let tmp = JSON.parse(value);
     if (typeof tmp === "boolean") {
       parsed_value = tmp;
-    }
-  } else if (key === "infillinators") {
-    if (typeof value === "string") {
-      let tmp = JSON.parse(value)
-      if (isInfillinator(tmp)) {
-        parsed_value = tmp;
-      } else {
-        parsed_value = [];
-      }
-    } else {
-      parsed_value = [];
     }
   } else {
     return target
@@ -171,7 +137,7 @@ const initialState: InitialState = {
 }
 
 // convert object to text
-function toText(obj: string | boolean | string[] | Infillinator[]) {
+function toText(obj: string | boolean | string[] ) {
   let text: string;
   if (typeof obj !== "string") {
     text = JSON.stringify(obj);
