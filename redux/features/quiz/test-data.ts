@@ -15,7 +15,24 @@ print('abef'.partition('cd'))`,
   answers: ["('abef','','')"],
 };
 
-export const defaultQuiz: QuizRecord = radioQuiz
+const checkboxQuiz: QuizRecord = {
+  question: "Select only access modifiers in Java",
+  variants: [
+    "public",
+    "static",
+    "protected",
+    "friend",
+    "void",
+  ],
+  isRadio: false,
+  isShort: false,
+  answers: [
+    "public",
+    "protected",
+  ],
+};
+
+export const defaultQuiz: QuizRecord = checkboxQuiz;
 /* {
   question: "",
   variants: [],

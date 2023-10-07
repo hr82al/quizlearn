@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { BLANK, EMPTY_QUIZ_RECORD, QuizRecord } from "../quiz/quizSlice";
 import { AppState, AppThunk } from "@/redux/store";
+import { hlog } from "@/components/prisma";
  
 
 export const BLANK_RE = new RegExp("(\\.\\.\\.\\.)");
@@ -74,15 +75,37 @@ function radioQuizCheckAnswer(state: StateType): boolean {
   return false;
 }
 
+function checkboxQuizCheckAnswer(state: StateType): boolean {
+  const userAnswers = state.userAnswers;
+  const answers = state.data.answers;
+  // If user hasn't checked one of the answers return false
+  for (let i = 0; i < answers.length; i++) {
+    const answer = answers[i];
+    if (!userAnswers.includes(answer)) {
+      return false;
+    }
+  }
+  // If user checked answer which is not in correct answers
+  for (let i = 0; i < userAnswers.length; i++) {
+    const userAnswer = userAnswers[i];
+    if (!answers.includes(userAnswer)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export const checkAnswerAsync = (): AppThunk =>
   (dispatch, getState) => {
     const state = getState().quizSolve;
     if (state.isCorrect === null) {
       switch (state.kind) {
         case QuizKind.RADIO:
-          dispatch(setIsCorrect(radioQuizCheckAnswer(state)))
+          dispatch(setIsCorrect(radioQuizCheckAnswer(state)));
           break;
         case QuizKind.CHECKBOX:
+          dispatch(setIsCorrect(checkboxQuizCheckAnswer(state)));
+          break;
         case QuizKind.FILL:
         case QuizKind.FILL_BLANKS:
         case QuizKind.FILL_SHORT:

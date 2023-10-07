@@ -5,6 +5,7 @@ import { QuizRecord} from "@/redux/features/quiz/quizSlice";
 import { QuizKind, checkAnswerAsync, selectQuizIsCorrect, selectQuizKind,  selectQuizQuestion,  selectQuizUserAnswer,  selectQuizVariants, setAnswer, setCheckboxAnswer, setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
 import { useEffect, useRef, useState } from "react";
 import { QuizFillBlanks } from "./QuizFillBlanks";
+import { type } from "os";
 
 export const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
 
@@ -151,7 +152,11 @@ function QuizCheckbox() {
       type="checkbox"
       toName={(idx?: number) => `quiz-checkbox${idx}` }
       toId={(idx) => `quiz-checkbox${idx}` }
-      handleClick={(i) => dispatch(setAnswer(i))}
+      handleClick={(answer, isSet) => {
+        if (typeof isSet === "boolean") {
+          dispatch(setCheckboxAnswer({answer, isSet}));
+        }
+      }}
     />
   );
 }
@@ -164,9 +169,7 @@ function QuizRadio() {
     toName={() => "quiz-radio"}
     toId={(idx) => `quiz-radio${idx}`}
     handleClick={(answer, isSet) => {
-      if (typeof isSet === "boolean") {
         dispatch(setAnswer(answer));
-      }
     }}
   />
   );
