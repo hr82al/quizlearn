@@ -130,6 +130,10 @@ function fillBlanksQuizCheckAnswer(state: StateType) {
   return userAnswers.join("") === state.data.answers.join("");
 }
 
+function fillShortQuizAnswer(state: StateType) {
+  return state.data.answers.some((answer) => compareCodes(state.userAnswer, answer));
+}
+
 export const checkAnswerAsync = (): AppThunk =>
   (dispatch, getState) => {
     const state = getState().quizSolve;
@@ -148,6 +152,8 @@ export const checkAnswerAsync = (): AppThunk =>
           dispatch(setIsCorrect(fillBlanksQuizCheckAnswer(state)));
           break;
         case QuizKind.FILL_SHORT:
+          dispatch(setIsCorrect(fillShortQuizAnswer(state)));
+          break;
         case QuizKind.NONE:
         case QuizKind.SELECT_BLANKS:
           break;

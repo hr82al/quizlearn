@@ -60,9 +60,19 @@ int main() {
   answers: [
     "printf",
   ]
-}
+};
 
-export const defaultQuiz: QuizRecord = fillBlanksQuiz;
+const fillShortQuiz: QuizRecord = {
+  question: "Solve equation: 3x + 2 = 11",
+  isRadio: false,
+  isShort: true,
+  variants: [],
+  answers: [
+    "3",
+  ]
+};
+
+export const defaultQuiz: QuizRecord = fillShortQuiz;
 /* {
   question: "",
   variants: [],
