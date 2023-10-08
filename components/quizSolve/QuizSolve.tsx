@@ -5,7 +5,7 @@ import { QuizRecord} from "@/redux/features/quiz/quizSlice";
 import { QuizKind, checkAnswerAsync, selectQuizIsCorrect, selectQuizKind,  selectQuizQuestion,  selectQuizUserAnswer,  selectQuizVariants, setAnswer, setCheckboxAnswer, setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
 import { useEffect, useRef, useState } from "react";
 import { QuizFillBlanks } from "./QuizFillBlanks";
-import { type } from "os";
+
 
 export const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
 
@@ -139,8 +139,17 @@ function QuizFillShort() {
 }
 
 function QuizFill() {
+  const dispatch = useAppDispatch();
+
   return (
-    <textarea name="quiz-fill" id="quiz-fill" className="quiz-input" autoFocus></textarea>
+    <textarea 
+      name="quiz-fill" 
+      id="quiz-fill" 
+      className="quiz-input" 
+      spellCheck={false} 
+      autoFocus 
+      onChange={e => dispatch(setAnswer(e.target.value))}
+    ></textarea>
   );
 }
 

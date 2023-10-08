@@ -95,6 +95,25 @@ function checkboxQuizCheckAnswer(state: StateType): boolean {
   return true;
 }
 
+
+function splitToCodeItems(code: string): string {
+  return code.split(/[\n \t]/).filter(i => i.length > 0).join("");
+}
+
+// Equals a code regardless of spaces characters
+function compareCodes(code1: string, code2: string): boolean {
+  const tmp1 = splitToCodeItems(code1);
+  const tmp2 = splitToCodeItems(code2);
+  hlog(tmp1, tmp2)
+  return tmp1 === tmp2;
+}
+
+function fillQuizCheckAnswer(state: StateType) {
+  const answers = state.data.answers;
+  const userAnswer = state.userAnswer;
+  return answers.some((code) => compareCodes(code, userAnswer));
+}
+
 export const checkAnswerAsync = (): AppThunk =>
   (dispatch, getState) => {
     const state = getState().quizSolve;
@@ -107,6 +126,8 @@ export const checkAnswerAsync = (): AppThunk =>
           dispatch(setIsCorrect(checkboxQuizCheckAnswer(state)));
           break;
         case QuizKind.FILL:
+          dispatch(setIsCorrect(fillQuizCheckAnswer(state)))
+;         break;
         case QuizKind.FILL_BLANKS:
         case QuizKind.FILL_SHORT:
         case QuizKind.NONE:

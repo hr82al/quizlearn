@@ -32,7 +32,22 @@ const checkboxQuiz: QuizRecord = {
   ],
 };
 
-export const defaultQuiz: QuizRecord = checkboxQuiz;
+const fillQuiz: QuizRecord = {
+  question: "Write a program in C to output \"Hello, World!\".",
+  isRadio: false,
+  isShort: false,
+  variants: [],
+  answers: [
+    `#include <stdio.h>
+
+int main() {
+  printf("Hello, World!");
+  return 0;
+}`
+  ],
+};
+
+export const defaultQuiz: QuizRecord = fillQuiz;
 /* {
   question: "",
   variants: [],
