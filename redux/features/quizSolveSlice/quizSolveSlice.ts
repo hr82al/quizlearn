@@ -44,10 +44,15 @@ function detectQuizKind(quiz: QuizRecord, blanksNum: number): QuizKind {
   return QuizKind.NONE;
 }
 
+type Piece = {
+  value: string,
+  isBlank: boolean,
+}
+
 type StateType = {
   data:QuizRecord,
   kind: QuizKind,
-  pieces: [string, boolean] [],
+  pieces: Piece[],
   userAnswers: string[],
   userAnswer: string,
   isCorrect: boolean | null,
@@ -114,6 +119,17 @@ function fillQuizCheckAnswer(state: StateType) {
   return answers.some((code) => compareCodes(code, userAnswer));
 }
 
+function fillBlanksQuizCheckAnswer(state: StateType) {
+  // collect filled blanks to userAnswer;
+  let userAnswers: string[] = [];
+  state.pieces.forEach(item => {
+    if (item.isBlank) {
+      userAnswers.push(item.value);
+    }
+  });
+  return userAnswers.join("") === state.data.answers.join("");
+}
+
 export const checkAnswerAsync = (): AppThunk =>
   (dispatch, getState) => {
     const state = getState().quizSolve;
@@ -129,6 +145,8 @@ export const checkAnswerAsync = (): AppThunk =>
           dispatch(setIsCorrect(fillQuizCheckAnswer(state)))
 ;         break;
         case QuizKind.FILL_BLANKS:
+          dispatch(setIsCorrect(fillBlanksQuizCheckAnswer(state)));
+          break;
         case QuizKind.FILL_SHORT:
         case QuizKind.NONE:
         case QuizKind.SELECT_BLANKS:
@@ -155,16 +173,17 @@ export const quizSolveSlice = createSlice({
       state.pieces = tmp.map(i => {
         if (i === BLANK) {
           blanks_num++;
-          return ["", true];
+          return { value:"", isBlank: true };
         } else {
-          return [i, false];
+          return { value: i, isBlank: false };
         }
       });
       state.kind = detectQuizKind(state.data, blanks_num);
+
     },
 
     setQuizPiece: (state, { payload }: PayloadAction<{index: number, text: string}>) => {
-      state.pieces[payload.index] = [payload.text, state.pieces[payload.index][1]]; 
+      state.pieces[payload.index].value = payload.text; 
     },
 
     setAnswer: (state, { payload }: PayloadAction<string>) => {
@@ -189,7 +208,14 @@ export const quizSolveSlice = createSlice({
   },
 });
 
-export const { setQuizSolve, setQuizPiece, setAnswer, setCheckboxAnswer, setIsCorrect } = quizSolveSlice.actions;
+export const { 
+  setQuizSolve, 
+  setQuizPiece, 
+  setAnswer, 
+  setCheckboxAnswer, 
+  setIsCorrect,
+} = quizSolveSlice.actions;
+
 export const selectQuizPieces = (state: AppState) => state.quizSolve.pieces;
 export const selectQuizKind = (state: AppState) => state.quizSolve.kind;
 export const selectQuizVariants = (state: AppState) => state.quizSolve.data.variants;

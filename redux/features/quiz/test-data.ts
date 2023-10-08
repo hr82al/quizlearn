@@ -47,7 +47,22 @@ int main() {
   ],
 };
 
-export const defaultQuiz: QuizRecord = fillQuiz;
+const fillBlanksQuiz: QuizRecord = {
+  question:
+`Fill in the blanks ot output string in C
+int main() {
+  ....("Hello, World!");
+  return 0;
+}`,
+  isRadio: false,
+  isShort: false,
+  variants: [],
+  answers: [
+    "printf",
+  ]
+}
+
+export const defaultQuiz: QuizRecord = fillBlanksQuiz;
 /* {
   question: "",
   variants: [],
