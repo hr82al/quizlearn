@@ -1,10 +1,11 @@
-import { JetBrains_Mono, Poppins } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import Navbar from "../Navbar";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { QuizRecord} from "@/redux/features/quiz/quizSlice";
 import { QuizKind, checkAnswerAsync, selectQuizIsCorrect, selectQuizKind,  selectQuizQuestion,  selectQuizUserAnswer,  selectQuizVariants, setAnswer, setCheckboxAnswer, setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
 import { useEffect, useRef, useState } from "react";
 import { QuizFillBlanks } from "./QuizFillBlanks";
+import { QuizSelectBlanks } from "./QuizSelectBlanks";
 
 
 export const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -54,7 +55,7 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
       <div className="flex flex-col gap-2 flex-auto main-container text-orange-200 text-lg  select-none">
         <div className="flex-auto flex flex-col gap-8">
 
-          {quizKind !== QuizKind.NONE && quizKind !== QuizKind.FILL_BLANKS && question.trim().length > 0 && (
+          {quizKind !== QuizKind.NONE && quizKind !== QuizKind.FILL_BLANKS  && quizKind !== QuizKind.SELECT_BLANKS && question.trim().length > 0 && (
             <div className={`border-2 border-main-light p-4 rounded-2xl`} >
               <pre className={`break-all whitespace-pre-wrap ${jetBrainFont.className}`}>
                 {question}
@@ -63,8 +64,7 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
           )}
 
 
-
-          <div className="flex justify-center flex-auto border-2 border-main-light rounded-2xl p-4">
+          <div className="flex items-start flex-auto border-2 border-main-light rounded-2xl p-4">
             {quizUI}
           </div>
         </div>
@@ -81,23 +81,6 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
       </div>
     </div>
   )
-}
-
-
-function QuizSelectBlanks() {
-  const variants = useAppSelector(selectQuizVariants);
-
-  const buttons = variants.map((item, idx) => {
-    return (
-      <button className="btn" key={idx}>{item}</button>
-    );
-  });
-
-  return (
-    <div className="flex items-start flex-row flex-wrap gap-8">
-      {buttons}
-    </div>
-  );
 }
 
 

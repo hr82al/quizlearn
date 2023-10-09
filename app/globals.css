@@ -30,8 +30,16 @@
     @apply block w-full  px-3 py-1 border-2 border-transparent resize-none bg-violet-950 focus:outline-none focus:border-amber-800 rounded-sm
   }
 
+  .code-btn {
+    @apply border-b border-main-light disabled:bg-gray-700 inline-block outline-none
+  }
+
+  .code-empty-btn {
+    @apply border-b text-main-base border-main-light disabled:bg-gray-700 inline-block outline-none
+  }
+
   .btn {
-    @apply px-6 py-2 text-sm shadow-md shadow-gray-700 bg-sky-950 rounded-xl hover:bg-violet-900 disabled:bg-gray-700 outline-none focus:bg-teal-900
+    @apply px-6 py-2 text-sm shadow-md shadow-gray-700 bg-main-darkest rounded-xl hover:bg-violet-900 disabled:bg-gray-700 outline-none focus:bg-teal-900
   }
 
   .btn:active {

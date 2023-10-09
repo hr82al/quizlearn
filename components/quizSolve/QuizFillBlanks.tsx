@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectQuizPieces, setQuizPiece } from "@/redux/features/quizSolveSlice/quizSolveSlice";
 import { JetBrains_Mono } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
+import { Preformatted } from "./Preformatted";
 
 export const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
 
@@ -49,15 +50,6 @@ function Blank({ index }: { index: number }) {
         value={pieces[index].value}
       />
     </>
-  );
-}
-
-function Preformatted({ index }: { index: number }) {
-  const pieces = useAppSelector(selectQuizPieces);
-  return (
-    <pre className="inline break-all whitespace-pre-wrap">
-      {pieces[index].value}
-    </pre>
   );
 }
 

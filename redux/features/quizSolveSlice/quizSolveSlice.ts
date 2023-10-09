@@ -1,7 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { BLANK, EMPTY_QUIZ_RECORD, QuizRecord } from "../quiz/quizSlice";
 import { AppState, AppThunk } from "@/redux/store";
-import { hlog } from "@/components/prisma";
  
 
 export const BLANK_RE = new RegExp("(\\.\\.\\.\\.)");
@@ -52,7 +51,9 @@ type Piece = {
 type StateType = {
   data:QuizRecord,
   kind: QuizKind,
+  uniqueVariants: string[],
   pieces: Piece[],
+  blankIndexes: number[],
   userAnswers: string[],
   userAnswer: string,
   isCorrect: boolean | null,
@@ -61,7 +62,9 @@ type StateType = {
 const initialState: StateType = {
   data: EMPTY_QUIZ_RECORD,
   kind: QuizKind.NONE,
+  uniqueVariants: [],
   pieces: [],
+  blankIndexes: [],
   userAnswers: [],
   userAnswer: "",
   isCorrect: null,
@@ -109,7 +112,6 @@ function splitToCodeItems(code: string): string {
 function compareCodes(code1: string, code2: string): boolean {
   const tmp1 = splitToCodeItems(code1);
   const tmp2 = splitToCodeItems(code2);
-  hlog(tmp1, tmp2)
   return tmp1 === tmp2;
 }
 
@@ -134,6 +136,10 @@ function fillShortQuizAnswer(state: StateType) {
   return state.data.answers.some((answer) => compareCodes(state.userAnswer, answer));
 }
 
+function selectBlanksCheckAnswer(sate: StateType) {
+  return false;
+}
+
 export const checkAnswerAsync = (): AppThunk =>
   (dispatch, getState) => {
     const state = getState().quizSolve;
@@ -155,7 +161,9 @@ export const checkAnswerAsync = (): AppThunk =>
           dispatch(setIsCorrect(fillShortQuizAnswer(state)));
           break;
         case QuizKind.NONE:
+          break;
         case QuizKind.SELECT_BLANKS:
+          dispatch(setIsCorrect(selectBlanksCheckAnswer(state)));
           break;
         default:
           const _exhaustiveCheck: never = state.kind;
@@ -174,18 +182,24 @@ export const quizSolveSlice = createSlice({
   reducers: {
     setQuizSolve: (state, action: PayloadAction<QuizRecord>) => {
       state.data = action.payload;
-      let tmp = action.payload.question.split(BLANK_RE);
-      let blanks_num = 0
-      state.pieces = tmp.map(i => {
+      let tmp = action.payload.question.split(BLANK_RE).filter(t => t.length > 0);
+
+      state.pieces = tmp.map((i, idx) => {
         if (i === BLANK) {
-          blanks_num++;
+          state.blankIndexes.push(idx);
           return { value:"", isBlank: true };
         } else {
           return { value: i, isBlank: false };
         }
       });
-      state.kind = detectQuizKind(state.data, blanks_num);
-
+      state.uniqueVariants = [];
+      state.data.variants.forEach(variant => {
+        const trimmedVariant = variant.trim();
+        if (!state.uniqueVariants.includes(trimmedVariant)) {
+          state.uniqueVariants.push(trimmedVariant);
+        }
+      });
+      state.kind = detectQuizKind(state.data, state.blankIndexes.length);
     },
 
     setQuizPiece: (state, { payload }: PayloadAction<{index: number, text: string}>) => {
@@ -211,8 +225,38 @@ export const quizSolveSlice = createSlice({
     setIsCorrect: (state, { payload }: PayloadAction<boolean | null>) => {
       state.isCorrect = payload;
     },
+
+    removeSelection: (state, { payload }: PayloadAction<number>) => {
+      const value = state.pieces[payload].value;
+      state.pieces[payload].value = "";
+    },
+
+    addSelection: (state, { payload }: PayloadAction<string>) => {
+      const valueWithSpaces = getWithSpaces(
+        state.data.variants, 
+        state.pieces.filter(p => p.isBlank).map(p => p.value),
+        payload
+        )
+      state.pieces = addPiece(state.pieces, {value: valueWithSpaces, isBlank: true});
+    },
+
+
   },
-});
+})
+
+function getWithSpaces(variants: string[], selected: string[], trimmed: string): string {
+  const index = selected.filter(i => i.trim() === trimmed).length;
+  return variants.filter(v => v.trim() === trimmed)[index];
+}
+
+function addPiece(pieces: Piece[], piece: Piece): Piece[] {
+  const index = pieces.findIndex(item => item.value === "");
+  if (index === -1) {
+    return [...pieces, piece];
+  } else {
+    return [...pieces.slice(0, index), piece, ...pieces.slice(index + 1)];
+  } 
+}
 
 export const { 
   setQuizSolve, 
@@ -220,6 +264,8 @@ export const {
   setAnswer, 
   setCheckboxAnswer, 
   setIsCorrect,
+  addSelection,
+  removeSelection,
 } = quizSolveSlice.actions;
 
 export const selectQuizPieces = (state: AppState) => state.quizSolve.pieces;
@@ -229,5 +275,7 @@ export const selectQuizIsCorrect = (state: AppState) => state.quizSolve.isCorrec
 export const selectQuizUserAnswers = (state:AppState) => state.quizSolve.userAnswers;
 export const selectQuizUserAnswer = (state: AppState) => state.quizSolve.userAnswer;
 export const selectQuizQuestion = (state: AppState) => state.quizSolve.data.question;
+export const selectUniqueVariants = (state: AppState) => state.quizSolve.uniqueVariants;
+export const selectQuizBlankIndexes = (state: AppState) => state.quizSolve.blankIndexes;
 
 export default quizSolveSlice.reducer;

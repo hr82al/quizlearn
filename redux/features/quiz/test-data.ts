@@ -3,16 +3,16 @@ import { QuizRecord } from "./quizSlice";
 
 const radioQuiz: QuizRecord = {
   question: `What is the output?
-print('abef'.partition('cd'))`,
+print('home'.partition('cd'))`,
   variants: [
-    "('abef','','')",
-    "('abef')",
-    "('abef','cd','')",
+    "('home','','')",
+    "('home')",
+    "('home','cd','')",
     "Error",
   ],
   isRadio: true,
   isShort: false,
-  answers: ["('abef','','')"],
+  answers: ["('home','','')"],
 };
 
 const checkboxQuiz: QuizRecord = {
@@ -72,7 +72,19 @@ const fillShortQuiz: QuizRecord = {
   ]
 };
 
-export const defaultQuiz: QuizRecord = fillShortQuiz;
+const selectBlanksQuiz: QuizRecord = {
+  question: "Put in right order\n....",
+  isRadio: false,
+  isShort: false,
+  variants: ["greet","+ ","function ","\"","\" ","age",") ","}","}","name","name","{ ","{\n  ",": ",": ",": ","; ",";\n","return ","Hello ","string","person","person","number ",".","("],
+  answers: [
+    `function greet(person: { name: string; age: number }) {
+  return "Hello " + person.name;
+}`,
+  ],
+}
+
+export const defaultQuiz: QuizRecord = selectBlanksQuiz;
 /* {
   question: "",
   variants: [],
