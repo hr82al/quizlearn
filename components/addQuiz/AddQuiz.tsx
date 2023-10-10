@@ -3,8 +3,10 @@ import Navbar from "../Navbar";
 import React, { useRef, useState } from "react";
 import { splitToItems } from "@/quiz/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { BLANK, QuizRecordProperty, ScreensKind, addItem, addItems, nextScreen, properties, propertyIsScreenKind, propertyTyCaption, selectIsReady, selectQuiz, selectQuizListItem, selectQuizProperty, selectQuizText, setCheckbox, setListItem, setScreen, setText } from "@/redux/features/quiz/quizSlice";
+import { BLANK, QuizRecordProperty, ScreensKind, addItem, addItems, nextScreen, properties, propertyIsScreenKind, propertyTyCaption, selectIsReady, selectQuiz, selectQuizCategory, selectQuizListItem, selectQuizProperty, selectQuizText, setCheckbox, setListItem, setQuizCategory, setScreen, setText } from "@/redux/features/quiz/quizSlice";
 import { useRouter } from "next/navigation";
+import Category from "../category/Category";
+import { CategoryEnum } from "@prisma/client";
 
 
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -113,10 +115,11 @@ export default function AddQuiz() {
   );
 }
 
-function InputRadio({ property, setIsOpen }: 
+function InputRadio({ property, setIsOpen, className }: 
   { 
     property: QuizRecordProperty,
-    setIsOpen: React.Dispatch<React.SetStateAction<boolean>> 
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    className?: string, 
   }
 ) {
   const currentProperty = useAppSelector(selectQuizProperty);
@@ -128,7 +131,7 @@ function InputRadio({ property, setIsOpen }:
   }
 
   return (
-    <label className="flex gap-4 justify-between rounded-full border-2 border-main-light px-2 py-1 w-44">
+    <label className={className}>
       {propertyTyCaption(property)}
       <input 
         type="radio"
@@ -140,23 +143,23 @@ function InputRadio({ property, setIsOpen }:
   )
 }
 
-function InputCheck ({ property, setIsOpen }: 
+function InputCheck ({ property, setIsOpen, className }: 
   { 
     property: QuizRecordProperty,
-    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    className?: string,
   }) { 
   const dispatch = useAppDispatch();
   const quiz = useAppSelector(selectQuiz);
   const checked = quiz[property] as boolean;
   
   function handleChange(e: boolean) {
-    // dispatch(setIsRadio(e));
     dispatch(setCheckbox({property, value: e}));
     setIsOpen(false);
   }
 
   return (
-    <label className="flex gap-4 justify-between rounded-full border-2 border-main-light px-2 py-1 w-44">
+    <label className={className}>
       {propertyTyCaption(property)}
       <input 
         type="checkbox"
@@ -171,20 +174,36 @@ function InputCheck ({ property, setIsOpen }:
 function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const hidden: string =isOpen ? "" : "hidden ";
-  const property = useAppSelector(selectQuizProperty);
+  const dispatch = useAppDispatch();
+  const category = useAppSelector(selectQuizCategory);
+
+  const className = "flex gap-4 justify-between rounded-full border-2 border-main-light px-2 py-1 w-44 bg-main-base";
 
 
   const inputs = properties.map((i, k) => {
     if (propertyIsScreenKind(i, ScreensKind.CHECKBOX)) {
       return (
-        <InputCheck key={k} setIsOpen={setIsOpen}  property={i as QuizRecordProperty} />
+        <InputCheck 
+          className={className}
+          key={k} setIsOpen={setIsOpen}  
+          property={i as QuizRecordProperty} 
+        />
       );
-    } else {
+    } else if (!propertyIsScreenKind(i, ScreensKind.CATEGORY)) {
       return (
-        <InputRadio key={k} setIsOpen={setIsOpen} property={i as QuizRecordProperty} />
+        <InputRadio
+          className={className}
+          key={k} setIsOpen={setIsOpen} 
+          property={i as QuizRecordProperty} 
+        />
       );
     }
   });
+
+  function handleChangeCategory(category: string) {
+    dispatch(setQuizCategory(category as CategoryEnum));
+    setIsOpen(false);
+  }
 
   return (
     <div className="relative">
@@ -193,6 +212,11 @@ function Menu() {
         className={`${hidden} bg-main-base absolute bottom-14 rounded-lg p-4 border-main-light border-2 flex flex-wrap gap-2`}
       >
         {inputs}
+        <Category 
+          className={className}
+          handleChangeCategory={(category) => handleChangeCategory(category)}
+          selected={category}
+        />
       </div>
     </div>
   );

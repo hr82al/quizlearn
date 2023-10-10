@@ -8,26 +8,30 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
  
-enum QuizEnum {
-  FILL
-  FILL_PART
-  RADIO
-  CHECK
-  ORDER
-  ORDER_PART
-}
 
 enum CategoryEnum {
   TS
+  RUST
+  PYTHON
+  C
+  HTML
+  CSS
+  JS
+  TAILWINDCSS
+  PHP
+  JAVA
 }
+
 
 model Quiz {
   id           Int       @id @default(autoincrement())
-  question     String    @unique
-  quizType     QuizEnum  
-  quiz         String   
-  answer       String
+  question     String
+  variants     String   
+  isRadio      Boolean
+  isShort      Boolean
+  answers      String
   category     CategoryEnum
+  ownerEmail   String @db.Char(254)
 }
 
 model User {

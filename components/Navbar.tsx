@@ -1,6 +1,5 @@
 "use client"
 
-import { useIsAdmin } from "@/redux/features/card/utils";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Poppins } from "next/font/google";
 import Image from "next/image";
@@ -12,7 +11,8 @@ const poppins = Poppins({ weight: "400", subsets: ["latin-ext"] });
 
 export default function Navbar({ children }: { children?: React.ReactNode}) {
   const session = useSession();
-  const isAdmin = useIsAdmin();
+
+
   return (
     <>
       <nav className={`flex items-center justify-between w-full h-16 mb-2 bg-sky-900 ${poppins.className}`}

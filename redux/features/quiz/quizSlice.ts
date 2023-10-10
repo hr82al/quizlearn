@@ -1,5 +1,5 @@
-import { hlog } from "@/components/prisma";
 import { AppState, AppThunk } from "@/redux/store";
+import { CategoryEnum } from "@prisma/client";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 
@@ -16,14 +16,16 @@ export interface QuizRecord {
   isRadio: boolean;
   isShort: boolean;
   answers: string[];
+  category: CategoryEnum;
 }
 
 export const EMPTY_QUIZ_RECORD: QuizRecord = {
   question: "",
   variants: [],
   isRadio: true,
-  isShort: true,
+  isShort: false,
   answers: [],
+  category: CategoryEnum.TS,
 };
 
 const CAPTIONS = {
@@ -33,6 +35,7 @@ const CAPTIONS = {
   isRadio: "Is Radio",
   isShort: "Is Short",
   answers: "Answers",
+  category: "Category"
 } as const;
 
 export function propertyTyCaption(property: string) {
@@ -51,15 +54,16 @@ export const enum ScreensKind {
   LIST = "LIST",
   CHECKBOX = "CHECKBOX",
   IS_RADIO = "IS_RADIO",
+  CATEGORY = "CATEGORY"
 }
 
 export enum UIEnum {
   question = ScreensKind.TEXT,
-  body = ScreensKind.BLANKED_TEXT,
   variants = ScreensKind.LIST,
   isRadio = ScreensKind.CHECKBOX,
   isShort = ScreensKind.CHECKBOX,
   answers = ScreensKind.LIST,
+  category = ScreensKind.CATEGORY,
 };
 
 
@@ -149,7 +153,10 @@ export const nextScreen = (): AppThunk =>
     do {
       idx = (idx + 1) % LENGTH;
       property = properties[idx] as QuizRecordProperty;
-    } while (typeof EMPTY_QUIZ_RECORD[property] === "boolean");
+    } while (!(
+      propertyIsScreenKind(property, ScreensKind.LIST) || 
+      propertyIsScreenKind(property, ScreensKind.TEXT)
+    ));
     
     dispatch(setScreen(property));
   }
@@ -208,8 +215,14 @@ export const quizSlice = createSlice({
       state.listItem = "";
     },
 
+    setQuizCategory: (state, { payload }: PayloadAction<CategoryEnum>) => {
+      state.data.category = payload;
+    },
+
     quizClear: (state) => {
-      state.data = EMPTY_QUIZ_RECORD;
+      state.data.question = "";
+      state.data.variants = [];
+      state.data.answers = [];
       state.property = "question";
       state.listItem = "";
       state.text = EMPTY_QUIZ_RECORD.question;
@@ -230,7 +243,20 @@ export const selectIsReady = (state: AppState) => {
 }
 export const selectQuizQuestion = (state: AppState) => state.quiz.data.question;
 export const selectQuiz = (state: AppState) => state.quiz.data;
+export const selectQuizCategory = (state: AppState) => state.quiz.data.category;
  
-export const { saveText, toNextProperty, setText, setProperty, setIsRadio, addItem, addItems, setListItem, setCheckbox, quizClear} = quizSlice.actions;
+export const { 
+  saveText, 
+  toNextProperty, 
+  setText, 
+  setProperty, 
+  setIsRadio, 
+  addItem, 
+  addItems, 
+  setListItem, 
+  setCheckbox, 
+  quizClear,
+  setQuizCategory,
+} = quizSlice.actions;
 
 export default quizSlice.reducer;

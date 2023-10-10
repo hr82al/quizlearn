@@ -1,17 +1,16 @@
 -- CreateEnum
-CREATE TYPE "QuizEnum" AS ENUM ('FILL', 'FILL_PART', 'RADIO', 'CHECK', 'ORDER', 'ORDER_PART');
-
--- CreateEnum
-CREATE TYPE "CategoryEnum" AS ENUM ('TS');
+CREATE TYPE "CategoryEnum" AS ENUM ('TS', 'RUST', 'PYTHON', 'C', 'HTML', 'CSS', 'JS', 'TAILWINDCSS', 'PHP', 'JAVA');
 
 -- CreateTable
 CREATE TABLE "Quiz" (
     "id" SERIAL NOT NULL,
     "question" TEXT NOT NULL,
-    "quizType" "QuizEnum" NOT NULL,
-    "quiz" TEXT NOT NULL,
-    "answer" TEXT NOT NULL,
+    "variants" TEXT NOT NULL,
+    "isRadio" BOOLEAN NOT NULL,
+    "isShort" BOOLEAN NOT NULL,
+    "answers" TEXT NOT NULL,
     "category" "CategoryEnum" NOT NULL,
+    "ownerEmail" CHAR(254) NOT NULL,
 
     CONSTRAINT "Quiz_pkey" PRIMARY KEY ("id")
 );
@@ -36,9 +35,6 @@ CREATE TABLE "Result" (
 
     CONSTRAINT "Result_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "Quiz_question_key" ON "Quiz"("question");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
