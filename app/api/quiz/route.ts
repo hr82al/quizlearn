@@ -67,7 +67,6 @@ export async function POST2(request: Request) {
 export async function POST(request: Request) {
   try {
     const json = await request.json() as QuizWithEmail;
-    hlog(JSON.stringify(request.credentials));
     const result = await prisma.quiz.create({
       data: {
         question: json.data.question,

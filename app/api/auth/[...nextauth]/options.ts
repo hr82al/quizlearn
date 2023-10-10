@@ -3,7 +3,7 @@ import { compareSync } from "bcrypt-ts"
 import { decode } from "base32"
 import GoogleProvider from "next-auth/providers/google"
 import { AdapterUser } from "next-auth/adapters";
-import { prisma } from "@/components/prisma";
+import { hlog, prisma } from "@/components/prisma";
 import { Account, NextAuthOptions, Profile, User } from "next-auth";
 import { getUser } from "@/redux/features/card/utils";
 
@@ -30,7 +30,7 @@ export const options: NextAuthOptions = {
               email: "hr82al@gmail.com"
             };
           }
-          const user = await getUser(credentials.username);
+          const user = await getUser(credentials.username, `${credentials.username}@quizlearn`);
           if (user === null) {
             return null;
           }

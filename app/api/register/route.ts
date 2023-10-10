@@ -5,16 +5,18 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   try {
     const req = await request.json();
-    if ("name" in req && "bcrypt_hash" in req) {
+    // register user
+    if ("name" in req && "bcrypt_hash" in req && "email" in req) {
       const result = await prisma.user.create({
         data: {
           name: req.name,
           bcryptHash: req.bcrypt_hash,
-          email: `${req.name}@quizlearn`,
+          email: req.email,
         }
       });
       return NextResponse.json(result, { status: 200});
     }
+    // check if user already registered
     if ("name" in req && "email" in req) {
       const result = await prisma.user.findFirst({
         where: {

@@ -3,6 +3,7 @@
 import { ChangeEvent, MouseEventHandler, useEffect, useState } from "react";
 import { hashSync } from "bcrypt-ts";
 import { signIn } from "next-auth/react";
+import { hlog } from "@/components/prisma";
 
 export default function Register() {
   const [user, setUser] = useState("");
@@ -30,7 +31,8 @@ export default function Register() {
   }
   
   async function handleRegister() {
-    // check if user nave is free
+    // check if user now is free
+    const email = `${user}@quizlearn`
     const name = await(await fetch(
       `${location.origin}/api/register`,
       {
@@ -38,7 +40,7 @@ export default function Register() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({name: user, email: null}),
+        body: JSON.stringify({name: user, email: email}),
       }
       )).json();
     if (name !== null) {
@@ -56,9 +58,13 @@ export default function Register() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({name: user, bcrypt_hash: bcrypt_hash}),
+        body: JSON.stringify({
+          name: user, 
+          bcrypt_hash: bcrypt_hash,
+          email: email,
+        }),
       }
-    ));
+    )).json();
     if (register !== null) {
       signIn("credentials", {
         username: user,
@@ -86,7 +92,7 @@ export default function Register() {
     <div className="text-orange-200 h-screen">
       <div className="absolute flex flex-col px-6 py-4 transform -translate-x-1/2 -translate-y-1/2 w-72 bg-sky-800 top-1/2 left-1/2 rounded-2xl">
         <label className="block rounded-md" htmlFor="register-user">User:</label>
-        <input maxLength={25} className="block mb-2 rounded-md quiz-input" id="register-user" type="text" name="register-user" onChange={changeUser} autoFocus />
+        <input maxLength={25} className="block mb-2 rounded-md quiz-input" id="register-user" type="text" name="register-user" onChange={changeUser} autoFocus spellCheck={false} />
         <label className="block rounded-md" htmlFor="register-password">Password:</label>
         <input maxLength={40} className="block rounded-md quiz-input" id="register-password" type="password" name="register-password" onChange={changePassword} />
         <div className="h-4 my-1 text-xs text-red-400">
