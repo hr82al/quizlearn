@@ -13,7 +13,7 @@ function isNumber(value: string | null): boolean {
   return false;
 }
 
-export async function GET(request: Request) {
+export async function GET2(request: Request) {
   const { searchParams } = new URL(request.url);
   const n = searchParams.get("n");
   const start = searchParams.get("start");
@@ -67,7 +67,7 @@ export async function POST2(request: Request) {
 export async function POST(request: Request) {
   try {
     const json = await request.json() as QuizWithEmail;
-    hlog(JSON.stringify(json));
+    hlog(JSON.stringify(request.credentials));
     const result = await prisma.quiz.create({
       data: {
         question: json.data.question,
@@ -83,4 +83,8 @@ export async function POST(request: Request) {
   } catch (error) {
     return NextResponse.json({ error }, { status: 500});
   }
+}
+
+export async function GET(request: Request) {
+  
 }

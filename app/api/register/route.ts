@@ -10,6 +10,7 @@ export async function POST(request: Request) {
         data: {
           name: req.name,
           bcryptHash: req.bcrypt_hash,
+          email: `${req.name}@quizlearn`,
         }
       });
       return NextResponse.json(result, { status: 200});
