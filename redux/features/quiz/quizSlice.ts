@@ -182,13 +182,15 @@ export const saveScreen = (): AppThunk =>
 export interface QuizWithEmail {
   data: QuizRecord,
   email: string,
+  username: string,
 }
 
-export const saveQuizAsync = (quiz: QuizRecord, email: string): AppThunk => 
+export const saveQuizAsync = (quiz: QuizRecord, email: string, username: string): AppThunk => 
   async (dispatch) => {
     const body: QuizWithEmail = {
       data: quiz,
       email: email,
+      username: username,
     }
     dispatch(saveScreen());
     await fetch("/api/quiz", {

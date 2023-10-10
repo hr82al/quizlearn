@@ -76,6 +76,7 @@ export async function POST(request: Request) {
         isShort: json.data.isShort,
         answers: JSON.stringify(json.data.answers),
         ownerEmail: json.email,
+        ownerName: json.username,
       }
     });
     return NextResponse.json({ok: 200}, {status: 200});

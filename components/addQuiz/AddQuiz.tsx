@@ -65,10 +65,11 @@ export default function AddQuiz() {
     dispatch(setText(value));
   }
 
-  function handleFinish() {
+  function handleSave() {
     const email = session.data?.user.email;
-    if (typeof email === "string") {
-      dispatch(saveQuizAsync(quiz, email));
+    const username = session.data?.user.name;
+    if (typeof email === "string" && typeof username === "string") {
+      dispatch(saveQuizAsync(quiz, email, username));
     }
   }
 
@@ -131,9 +132,9 @@ export default function AddQuiz() {
           <button 
             className="btn w-28" 
             disabled={!isReady}
-            onClick={handleFinish}
+            onClick={handleSave}
           >
-            Finish
+            Save
           </button>
         </div>
       </div>

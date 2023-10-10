@@ -31,7 +31,8 @@ model Quiz {
   isShort      Boolean
   answers      String
   category     CategoryEnum
-  ownerEmail   String @db.Char(254)
+  ownerEmail   String    @db.Char(254)
+  ownerName    String    @db.VarChar(25)
 }
 
 model User {
