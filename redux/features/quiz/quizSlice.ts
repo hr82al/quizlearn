@@ -86,14 +86,26 @@ function setQuizRecord(target: QuizRecord, key: keyof QuizRecord, value: string)
   if (typeof target[key] === "string") {
     parsed_value = value;
   } else if (key === "variants" || key === "answers") {
-    let tmp = JSON.parse(value);
+    let tmp = [];
+    try {
+      tmp = JSON.parse(value);
+    } catch (error) {
+      tmp = [];
+    }
+
     if (isStringList(tmp)) {
       parsed_value = tmp;
     } else {
       parsed_value = [];
     }
   } else if (typeof target[key] === "boolean") {
-    let tmp = JSON.parse(value);
+    let tmp = false;
+    try {
+      tmp = JSON.parse(value);
+    } catch(error) {
+      tmp = false;
+    }
+
     if (typeof tmp === "boolean") {
       parsed_value = tmp;
     }
@@ -161,6 +173,33 @@ export const nextScreen = (): AppThunk =>
     dispatch(setScreen(property));
   }
 
+export const saveScreen = (): AppThunk =>
+  (dispatch, getState) => {
+    const property = getState().quiz.property;
+    dispatch(setScreen(property));
+  }
+
+export interface QuizWithEmail {
+  data: QuizRecord,
+  email: string,
+}
+
+export const saveQuizAsync = (quiz: QuizRecord, email: string): AppThunk => 
+  async (dispatch) => {
+    const body: QuizWithEmail = {
+      data: quiz,
+      email: email,
+    }
+    dispatch(saveScreen());
+    await fetch("/api/quiz", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+  }
+
 
 export const quizSlice = createSlice({
   name: "quiz",
@@ -206,12 +245,20 @@ export const quizSlice = createSlice({
     },
 
     addItem: (state) => {
-      state.text = JSON.stringify(JSON.parse(state.text).concat(state.listItem));
+      try {
+        state.text = JSON.stringify(JSON.parse(state.text).concat(state.listItem));
+      } catch(error) {
+        state.text = JSON.stringify([state.listItem]);
+      }
       state.listItem = "";
     },
 
     addItems: (state, { payload }: PayloadAction<string[]>) => {
-      state.text = JSON.stringify(JSON.parse(state.text).concat(payload));
+      try {
+        state.text = JSON.stringify(JSON.parse(state.text).concat(payload));
+      } catch (error) {
+        state.text = JSON.stringify([payload]);
+      }
       state.listItem = "";
     },
 

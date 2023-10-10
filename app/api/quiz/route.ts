@@ -1,4 +1,5 @@
-import { prisma } from "@/components/prisma";
+import { hlog, prisma } from "@/components/prisma";
+import { QuizRecord, QuizWithEmail } from "@/redux/features/quiz/quizSlice";
 import { CategoryEnum, Quiz } from "@prisma/client";
 import { NextResponse } from "next/server";
 
@@ -49,7 +50,7 @@ function isCategoryRes(v: any): v is CategoriesReq {
   return v.categories.every(isCategory) && (v as CategoriesReq).num !== undefined;
 }
 
-export async function POST(request: Request) {
+export async function POST2(request: Request) {
   try {
     const json = await request.json();
     if (isCategoryRes(json)) {
@@ -60,5 +61,26 @@ export async function POST(request: Request) {
     return NextResponse.json( {error: json}, { status: 500 });
   } catch (error) {
     return NextResponse.json({error}, { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const json = await request.json() as QuizWithEmail;
+    hlog(JSON.stringify(json));
+    const result = await prisma.quiz.create({
+      data: {
+        question: json.data.question,
+        variants: JSON.stringify(json.data.variants),
+        category: json.data.category,
+        isRadio: json.data.isRadio,
+        isShort: json.data.isShort,
+        answers: JSON.stringify(json.data.answers),
+        ownerEmail: json.email,
+      }
+    });
+    return NextResponse.json({ok: 200}, {status: 200});
+  } catch (error) {
+    return NextResponse.json({ error }, { status: 500});
   }
 }

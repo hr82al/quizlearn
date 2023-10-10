@@ -3,10 +3,12 @@ import Navbar from "../Navbar";
 import React, { useRef, useState } from "react";
 import { splitToItems } from "@/quiz/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { BLANK, QuizRecordProperty, ScreensKind, addItem, addItems, nextScreen, properties, propertyIsScreenKind, propertyTyCaption, selectIsReady, selectQuiz, selectQuizCategory, selectQuizListItem, selectQuizProperty, selectQuizText, setCheckbox, setListItem, setQuizCategory, setScreen, setText } from "@/redux/features/quiz/quizSlice";
+import { BLANK, QuizRecordProperty, ScreensKind, addItem, addItems, nextScreen, properties, propertyIsScreenKind, propertyTyCaption, saveQuizAsync, saveScreen, selectIsReady, selectQuiz, selectQuizCategory, selectQuizListItem, selectQuizProperty, selectQuizText, setCheckbox, setListItem, setQuizCategory, setScreen, setText } from "@/redux/features/quiz/quizSlice";
 import { useRouter } from "next/navigation";
 import Category from "../category/Category";
 import { CategoryEnum } from "@prisma/client";
+import { useSession } from "next-auth/react";
+import { hlog } from "../prisma";
 
 
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -22,6 +24,9 @@ export default function AddQuiz() {
   const isReady = useAppSelector(selectIsReady);
   const router = useRouter();
   const ref = useRef<HTMLTextAreaElement>(null);
+  const quiz = useAppSelector(selectQuiz);
+  const session = useSession();
+  
 
 
   function handleNext() {
@@ -60,6 +65,13 @@ export default function AddQuiz() {
     dispatch(setText(value));
   }
 
+  function handleFinish() {
+    const email = session.data?.user.email;
+    if (typeof email === "string") {
+      dispatch(saveQuizAsync(quiz, email));
+    }
+  }
+
   return (
     <div className="flex flex-col h-screen">
       <Navbar>
@@ -92,7 +104,10 @@ export default function AddQuiz() {
           </button>
           <button
             className={`btn ${hidden}`}
-            onClick={() => dispatch(addItem())}
+            onClick={() => {
+              dispatch(addItem());
+              dispatch(saveScreen());
+            }}
           >
             Add
           </button>
@@ -103,10 +118,21 @@ export default function AddQuiz() {
           >
             Next
           </button>
-          <button className="btn w-28" disabled={!isReady} onClick={() => router.push("/learn")}>
+          <button 
+            className="btn w-28" 
+            disabled={!isReady} 
+            onClick={() => {
+              dispatch(saveScreen());
+              router.push("/learn");
+            }}
+          >
             Preview
           </button>
-          <button className="btn w-28" disabled={!isReady}>
+          <button 
+            className="btn w-28" 
+            disabled={!isReady}
+            onClick={handleFinish}
+          >
             Finish
           </button>
         </div>

@@ -1,11 +1,9 @@
 import { prisma } from '@/components/prisma';
-import { QuizEnum } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
 
 export type QuizT = {
   question: string;
-  quiz_type: QuizEnum;
   quiz: string;
   answer: string;
 }
