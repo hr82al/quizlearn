@@ -1,7 +1,6 @@
 import { hlog } from "@/components/prisma";
 import { AppState, AppThunk } from "@/redux/store";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { defaultQuiz } from "./test-data";
 
 
 export const BLANK = "....";
@@ -19,25 +18,13 @@ export interface QuizRecord {
   answers: string[];
 }
 
-export const EMPTY_QUIZ_RECORD: QuizRecord = defaultQuiz;
- /* {
-  question: `What is the output of this code?",
-function greet(person: { name: ....; age: number }) {
-  return "Hello " .... person.name;
-}`,
-  variants: [
-    "+",
-    "string",
-    "number",
-    // "['My' 'name' 'is' 'Khan']",
-    // "['My name' 'is Khan']",
-    // "['My' 'name' 'is' 'Khan']",
-    // "['My', 'name is Khans']"
-  ],
+export const EMPTY_QUIZ_RECORD: QuizRecord = {
+  question: "",
+  variants: [],
   isRadio: true,
   isShort: true,
-  answers: ["sting number"],
-}; */
+  answers: [],
+};
 
 const CAPTIONS = {
   question: "Question",
@@ -220,6 +207,13 @@ export const quizSlice = createSlice({
       state.text = JSON.stringify(JSON.parse(state.text).concat(payload));
       state.listItem = "";
     },
+
+    quizClear: (state) => {
+      state.data = EMPTY_QUIZ_RECORD;
+      state.property = "question";
+      state.listItem = "";
+      state.text = EMPTY_QUIZ_RECORD.question;
+    },
   }
 });
 
@@ -237,6 +231,6 @@ export const selectIsReady = (state: AppState) => {
 export const selectQuizQuestion = (state: AppState) => state.quiz.data.question;
 export const selectQuiz = (state: AppState) => state.quiz.data;
  
-export const { saveText, toNextProperty, setText, setProperty, setIsRadio, addItem, addItems, setListItem, setCheckbox} = quizSlice.actions;
+export const { saveText, toNextProperty, setText, setProperty, setIsRadio, addItem, addItems, setListItem, setCheckbox, quizClear} = quizSlice.actions;
 
 export default quizSlice.reducer;
