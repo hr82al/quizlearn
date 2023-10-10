@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { BLANK, EMPTY_QUIZ_RECORD, QuizRecord } from "../quiz/quizSlice";
 import { AppState, AppThunk } from "@/redux/store";
+import { hlog } from "@/components/prisma";
  
 
 export const BLANK_RE = new RegExp("(\\.\\.\\.\\.)");
@@ -136,8 +137,11 @@ function fillShortQuizAnswer(state: StateType) {
   return state.data.answers.some((answer) => compareCodes(state.userAnswer, answer));
 }
 
-function selectBlanksCheckAnswer(sate: StateType) {
-  return false;
+function selectBlanksCheckAnswer(state: StateType) {
+  
+  const userAnswer = state.pieces.filter(p => p.isBlank).map(p => p.value).join("");
+  hlog(JSON.stringify([state.data.answers, userAnswer]));
+  return state.data.answers.some(answer => compareCodes(answer, userAnswer));
 }
 
 export const checkAnswerAsync = (): AppThunk =>
