@@ -13,6 +13,7 @@ print('home'.partition('cd'))`,
   isRadio: true,
   isShort: false,
   answers: ["('home','','')"],
+  category: "TS",
 };
 
 const checkboxQuiz: QuizRecord = {
@@ -30,6 +31,7 @@ const checkboxQuiz: QuizRecord = {
     "public",
     "protected",
   ],
+  category: "TS",
 };
 
 const fillQuiz: QuizRecord = {
@@ -45,6 +47,7 @@ int main() {
   return 0;
 }`
   ],
+  category: "TS",
 };
 
 const fillBlanksQuiz: QuizRecord = {
@@ -59,7 +62,8 @@ int main() {
   variants: [],
   answers: [
     "printf",
-  ]
+  ],
+  category: "TS",
 };
 
 const fillShortQuiz: QuizRecord = {
@@ -69,7 +73,8 @@ const fillShortQuiz: QuizRecord = {
   variants: [],
   answers: [
     "3",
-  ]
+  ],
+  category: "TS",
 };
 
 const selectBlanksQuiz: QuizRecord = {
@@ -82,6 +87,7 @@ const selectBlanksQuiz: QuizRecord = {
   return "Hello " + person.name;
 }`,
   ],
+  category: "TS",
 }
 
 export const defaultQuiz: QuizRecord = selectBlanksQuiz;

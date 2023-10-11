@@ -5,7 +5,7 @@ import GoogleProvider from "next-auth/providers/google"
 import { AdapterUser } from "next-auth/adapters";
 import { hlog, prisma } from "@/components/prisma";
 import { Account, NextAuthOptions, Profile, User } from "next-auth";
-import { getUser } from "@/redux/features/card/utils";
+import { getUser } from "@/quiz/utils";
 
 
 export const options: NextAuthOptions = {

@@ -18,7 +18,10 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
   const question = useAppSelector(selectQuizQuestion);
   
   useEffect(() => {
-    dispatch(setQuizSolve(quiz));
+    if (quiz) {
+      dispatch(setQuizSolve(quiz));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
 
 

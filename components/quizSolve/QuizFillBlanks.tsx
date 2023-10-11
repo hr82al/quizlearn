@@ -24,6 +24,7 @@ function Blank({ index }: { index: number }) {
   const [width, setWidth] = useState(MIN_WIDTH);
   const dispatch = useAppDispatch();
   const ref = useRef<HTMLSpanElement>(null);
+  const value = pieces[index].value;
 
 
   useEffect(() => {
@@ -31,7 +32,7 @@ function Blank({ index }: { index: number }) {
       const tmp = ref.current.offsetWidth < MIN_WIDTH ? MIN_WIDTH : ref.current.offsetWidth;
       setWidth(tmp);
     }
-  }, [pieces[index].value]);
+  }, [value]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     dispatch(setQuizPiece({index , text: e.target.value}));
@@ -40,14 +41,14 @@ function Blank({ index }: { index: number }) {
 
   return (
     <>
-      <span className="absolute -top-1/2" ref={ref}>{pieces[index].value}</span>
+      <span className="absolute -top-1/2" ref={ref}>{value}</span>
       <input
         style={{ width }}
         id={`blank${index}`}
         onChange={(e) => handleChange(e)}
         spellCheck={false}
         className="text-center inline-block border-b-2 bg-main-base border-main-lightest outline-none"
-        value={pieces[index].value}
+        value={value}
       />
     </>
   );
