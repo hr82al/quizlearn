@@ -1,21 +1,18 @@
 import { prisma } from "@/components/prisma";
 import { NextResponse } from "next/server";
 
-
-// get quiz by ID
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  _request: Request,
+  { params: { id }}: { params: { id: number }}
 ) {
   try {
-    const id = params.id;
-    const result = await prisma.quiz.findUnique({
+    const result = await prisma.quiz.delete({
       where: {
         id: Number(id),
-      },
+      }
     });
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    return NextResponse.json(error, { status: 500 });
+    return NextResponse.json({ error }, { status: 500});
   }
 }

@@ -10,7 +10,8 @@ CREATE TABLE "Quiz" (
     "isShort" BOOLEAN NOT NULL,
     "answers" TEXT NOT NULL,
     "category" "CategoryEnum" NOT NULL,
-    "ownerEmail" CHAR(254) NOT NULL,
+    "ownerEmail" VARCHAR(254) NOT NULL,
+    "ownerName" VARCHAR(25) NOT NULL,
 
     CONSTRAINT "Quiz_pkey" PRIMARY KEY ("id")
 );
@@ -21,7 +22,7 @@ CREATE TABLE "User" (
     "name" VARCHAR(25) NOT NULL,
     "bcryptHash" CHAR(60) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "email" VARCHAR(64) NOT NULL,
+    "email" VARCHAR(254) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

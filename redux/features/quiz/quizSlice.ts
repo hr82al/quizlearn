@@ -193,7 +193,7 @@ export const saveQuizAsync = (quiz: QuizRecord, email: string, username: string)
       username: username,
     }
     dispatch(saveScreen());
-    await fetch("/api/quiz", {
+    await fetch("/api/quiz/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
