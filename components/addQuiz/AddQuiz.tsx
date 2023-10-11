@@ -124,7 +124,7 @@ export default function AddQuiz() {
             disabled={!isReady} 
             onClick={() => {
               dispatch(saveScreen());
-              router.push("/learn");
+              router.push("/quiz");
             }}
           >
             Preview

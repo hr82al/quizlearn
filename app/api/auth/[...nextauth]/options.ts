@@ -75,7 +75,7 @@ export const options: NextAuthOptions = {
     },
 
     async session({ session, user, token}) {
-      const tmp = (await getUser(session.user.name, session.user.email));
+      const tmp = await getUser(session.user.name, session.user.email);
       if (typeof tmp?.id === "number") {
         session.user.id = tmp.id;
       }
