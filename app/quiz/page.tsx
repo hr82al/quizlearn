@@ -5,8 +5,10 @@ import { selectQuiz } from "@/redux/features/quiz/quizSlice";
 import { useAppSelector } from "@/redux/hooks";
 
 export default function QuizPage() {
-    const quiz = useAppSelector(selectQuiz);
+    // TODO need to work with add quiz
+    // const quiz = useAppSelector(selectQuiz);
     return (
-        <QuizSolve quiz={quiz}/>
+        // TODO need to work with add quiz
+        <QuizSolve /* quiz={quiz} *//>
     )
 }

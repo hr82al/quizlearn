@@ -1,6 +1,8 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { BLANK, EMPTY_QUIZ_RECORD, QuizRecord } from "../quiz/quizSlice";
 import { AppState, AppThunk } from "@/redux/store";
+import { Quiz } from "@prisma/client";
+import { hlog } from "@/components/prisma";
  
 
 export const BLANK_RE = new RegExp("(\\.\\.\\.\\.)");
@@ -49,6 +51,8 @@ type Piece = {
 }
 
 type StateType = {
+  id: number,
+  ownerName: string,
   data:QuizRecord,
   kind: QuizKind,
   uniqueVariants: string[],
@@ -60,6 +64,8 @@ type StateType = {
 }
 
 const initialState: StateType = {
+  id: -1,
+  ownerName: "",
   data: EMPTY_QUIZ_RECORD,
   kind: QuizKind.NONE,
   uniqueVariants: [],
@@ -177,13 +183,8 @@ export const checkAnswerAsync = (): AppThunk =>
     }, 3000);
   };
 
-export const quizSolveSlice = createSlice({
-  name: "quizSolve",
-  initialState,
-  reducers: {
-    setQuizSolve: (state, action: PayloadAction<QuizRecord>) => {
-      state.data = action.payload;
-      let tmp = action.payload.question.split(BLANK_RE).filter(t => t.length > 0);
+function makeQuizSolve(state: StateType, quiz: QuizRecord) {
+  let tmp = quiz.question.split(BLANK_RE).filter(t => t.length > 0);
 
       state.pieces = tmp.map((i, idx) => {
         if (i === BLANK) {
@@ -201,6 +202,28 @@ export const quizSolveSlice = createSlice({
         }
       });
       state.kind = detectQuizKind(state.data, state.blankIndexes.length);
+    return state;
+}
+
+export const quizSolveSlice = createSlice({
+  name: "quizSolve",
+  initialState,
+  reducers: {
+    setQuizSolve: (state, action: PayloadAction<QuizRecord>) => {
+      state.data = action.payload;
+      state = makeQuizSolve(state, action.payload);
+    },
+
+    initQuiz: (state, { payload }: PayloadAction<Quiz>) => {
+      const quiz = payload;
+      state.data.question = quiz.question;
+      state.data.category = quiz.category;
+      state.data.isRadio = quiz.isRadio;
+      state.data.isShort = quiz.isShort;
+      state.data.variants =  JSON.parse(quiz.variants);
+      state.data.answers = JSON.parse(quiz.answers);
+      state.id = quiz.id;
+      state = makeQuizSolve(state, state.data);
     },
 
     setQuizPiece: (state, { payload }: PayloadAction<{index: number, text: string}>) => {
@@ -267,6 +290,7 @@ export const {
   setIsCorrect,
   addSelection,
   removeSelection,
+  initQuiz,
 } = quizSolveSlice.actions;
 
 export const selectQuizPieces = (state: AppState) => state.quizSolve.pieces;

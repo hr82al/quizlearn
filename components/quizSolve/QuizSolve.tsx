@@ -10,20 +10,21 @@ import { QuizSelectBlanks } from "./QuizSelectBlanks";
 
 export const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
 
-
-export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
+                            //TODO need to work with add quiz
+export function QuizSolve(/* { quiz }: { quiz: QuizRecord } */) {
   const dispatch = useAppDispatch();
   const quizKind = useAppSelector(selectQuizKind);
   const isCorrect = useAppSelector(selectQuizIsCorrect);
   const question = useAppSelector(selectQuizQuestion);
   
+/*   // TODO need to work with add quiz
   useEffect(() => {
     if (quiz) {
       dispatch(setQuizSolve(quiz));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
-
+ */
 
   let quizUI = (<></>);
   switch (quizKind) {

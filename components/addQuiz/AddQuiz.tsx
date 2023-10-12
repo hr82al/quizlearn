@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import Category from "../category/Category";
 import { CategoryEnum } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import { hlog } from "../prisma";
+import { setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
 
 
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -73,6 +73,12 @@ export default function AddQuiz() {
     }
   }
 
+  function handlePreview(){
+    dispatch(saveScreen());
+    dispatch(setQuizSolve(quiz));
+    router.push("/quiz");
+  }
+
   return (
     <div className="flex flex-col h-screen">
       <Navbar>
@@ -123,10 +129,7 @@ export default function AddQuiz() {
           <button 
             className="btn w-28" 
             disabled={!isReady} 
-            onClick={() => {
-              dispatch(saveScreen());
-              router.push("/quiz");
-            }}
+            onClick={handlePreview}
           >
             Preview
           </button>

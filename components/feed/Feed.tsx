@@ -2,11 +2,13 @@ import { useRouter } from "next/navigation";
 import { MaterialSymbolsAddCircleRounded } from "../Icons";
 import { useAppDispatch } from "@/redux/hooks";
 import { quizClear } from "@/redux/features/quiz/quizSlice";
-import axios, { Axios } from "axios";
+import axios from "axios";
 import { Quiz } from "@prisma/client";
 import { useEffect, useState } from "react";
-import "../../quiz/utils";
+import "@/quiz/utils";
 import { Poppins } from "next/font/google";
+import { initQuiz } from "@/redux/features/quizSolveSlice/quizSolveSlice";
+import { hlog } from "../prisma";
 
 const poppinsBold = Poppins({ weight: "700", subsets: ["latin-ext"] });
 const poppinsBlack = Poppins({ weight: "900", subsets: ["latin-ext"] });
@@ -54,7 +56,7 @@ export default function Feed() {
       <MaterialSymbolsAddCircleRounded
         width={80}
         height={80}
-        className="fixed text-sky-800 add-icon cursor-pointer"
+        className="fixed text-violet-300 add-icon cursor-pointer"
         onClick={handleAdd}
       />
     </div>
@@ -62,8 +64,16 @@ export default function Feed() {
 }
 
 function ShortQuiz({ quiz }: { quiz: Quiz }) {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  function handleSolveQuiz() {
+    dispatch(initQuiz(quiz));
+    router.push("/quiz");
+  }
+
   return (
-    <div>
+    <div className="cursor-pointer" onClick={handleSolveQuiz}>
       <div>
         <div
           className={`${poppinsBlack.className} inline-block text-xl bg-main-darkest rounded-full p-1 mr-3 border-2 border-main-light`}
@@ -77,7 +87,6 @@ function ShortQuiz({ quiz }: { quiz: Quiz }) {
       <div className="ml-8 mt-2">
        {quiz.question}
       </div>
-
     </div>
   );
 }
