@@ -21,6 +21,9 @@ const config: Config = {
         '8': '2rem',
         '4': '1rem',
       },
+      minHeight: {
+        '1/2': '50vh'
+      },
       keyframes: {
         result: {
           '0%': { top: '-10%' },

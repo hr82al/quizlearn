@@ -67,7 +67,7 @@ export function QuizSolve({ quiz }: { quiz: QuizRecord }) {
           )}
 
 
-          <div className="flex items-start flex-auto border-2 border-main-light rounded-2xl p-4">
+          <div className="flex flex-col items-start min-h-1/2 border-2 border-main-light rounded-2xl p-4">
             {quizUI}
           </div>
         </div>
@@ -131,7 +131,7 @@ function QuizFill() {
     <textarea 
       name="quiz-fill" 
       id="quiz-fill" 
-      className="quiz-input" 
+      className="quiz-input flex-auto" 
       spellCheck={false} 
       autoFocus 
       onChange={e => dispatch(setAnswer(e.target.value))}
