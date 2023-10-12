@@ -12,12 +12,12 @@ datasource db {
 enum CategoryEnum {
   TS
   RUST
-  PYTHON
+  PY
   C
   HTML
   CSS
   JS
-  TAILWINDCSS
+  TWCSS
   PHP
   JAVA
 }

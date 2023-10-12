@@ -57,13 +57,39 @@ function splitOperators(x: string[]) {
   return out;
 }
 
+
 declare global {
   interface Array<T> {
       shuffle(): Array<T>;
       count(element: T): number;
       compareTo(arr: T[]): boolean;
+      mapJoin<U>(callbackfn: (value: T, index: number, array: T[]) => U, callbackSep: (index: number) => U, thisArg?: any): U[];
   }
 }
+
+
+/* take array and 2 call backs 
+for example arr = [1,2,3]
+arr.mapJoin((x)=>x, (y) => 0);
+will result
+[1,0,2,0,3]
+*/
+Array.prototype.mapJoin = function<U, T>(callbackfn: (value: T, index: number, array: T[]) => U, callbackSep: (index: number) => U, thisArg?: any): U[] {
+    if (this.length <= 1) {
+      return this;
+    }
+    const out: U[] = [];
+    let idx = 0;
+    for (let i = 0; i < this.length - 1; i++) {
+      out.push(callbackfn(this[i], idx, this));
+      idx++;
+      out.push(callbackSep(idx));
+      idx++;
+    }
+    out.push(callbackfn(this[this.length - 1], idx, this));
+    return out;
+  }
+
 
 Array.prototype.compareTo = function(arr) {
   if (this.length !== arr.length) {
