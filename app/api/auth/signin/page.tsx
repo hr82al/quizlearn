@@ -2,8 +2,9 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
+import Image from "next/image"
 
-export default function login({ searchParams }: { searchParams: { callbackUrl: string } }) {
+export default function Login({ searchParams }: { searchParams: { callbackUrl: string } }) {
   const username = useRef("");
   const password = useRef("");
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function login({ searchParams }: { searchParams: { callbackUrl: s
           className="btn flex items-center gap-4"
           onClick={handleGoogleSubmit}
         >
-          <img loading="lazy" height="24" width="24" id="provider-logo" src="https://authjs.dev/img/providers/google.svg" />
+          <Image height={24} width={24} alt="Google log" src="https://authjs.dev/img/providers/google.svg" />
           Login with Google
         </button>
 
