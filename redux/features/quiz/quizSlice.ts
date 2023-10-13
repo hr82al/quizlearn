@@ -75,10 +75,14 @@ export function propertyIsScreenKind(propertyName: string, kind: ScreensKind) {
 
 export function isQuizRecord(obj: object): obj is QuizRecord {
   const quizRecord = obj as QuizRecord;
-  return quizRecord.question !== undefined &&
+  return typeof quizRecord.question === "string" &&
     Array.isArray(quizRecord.variants) &&
     quizRecord.variants.every(i => typeof i === "string") &&
-    typeof quizRecord.isRadio === "boolean";
+    typeof quizRecord.isRadio === "boolean" && 
+    typeof quizRecord.isShort === "boolean" && 
+    Array.isArray(quizRecord.answers) &&
+    quizRecord.answers.every(i => typeof i === "string") &&
+    Object.values(CategoryEnum).includes(quizRecord.category);
 }
 
 function setQuizRecord(target: QuizRecord, key: keyof QuizRecord, value: string) {
@@ -179,26 +183,15 @@ export const saveScreen = (): AppThunk =>
     dispatch(setScreen(property));
   }
 
-export interface QuizWithEmail {
-  data: QuizRecord,
-  email: string,
-  username: string,
-}
-
-export const saveQuizAsync = (quiz: QuizRecord, email: string, username: string): AppThunk => 
+export const saveQuizAsync = (quiz: QuizRecord): AppThunk => 
   async (dispatch) => {
-    const body: QuizWithEmail = {
-      data: quiz,
-      email: email,
-      username: username,
-    }
     dispatch(saveScreen());
     await fetch("/api/quiz/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(quiz),
     });
   }
 

@@ -1,38 +1,33 @@
 import { prisma } from "@/components/prisma";
-import { QuizWithEmail } from "@/redux/features/quiz/quizSlice";
+import { isQuizRecord } from "@/redux/features/quiz/quizSlice";
 import { NextResponse } from "next/server";
+import { options } from "../../auth/[...nextauth]/options";
+import { getServerSession } from "next-auth";
 
 
-function isQuizWithEmail(value: any): value is QuizWithEmail {
-  let x = value as QuizWithEmail;
-  return (
-    x.data !== undefined && 
-    x.data.answers !== undefined && 
-    x.data.category !== undefined && 
-    x.data.isRadio !== undefined && 
-    x.data.isShort !== undefined &&
-    x.data.question !== undefined &&
-    x.data.variants !== undefined &&
-    x.email !== undefined &&
-    x.username !== undefined
-  );
-}
 
-export async function POST(request: Request) {
+export async function POST(request: Request, response: Response) {
   try {
     const json = await request.json();
-    
-    if (isQuizWithEmail(json)) {
+    const session = await getServerSession(options);
+    if (session === null) {
+      throw new Error("There is no session.");
+    }
+
+    if (typeof session.user.name !== "string" && typeof session.user.email !== "string") {
+      throw new Error("Session doesn't have user's data");
+    }
+    if (isQuizRecord(json)) {
       const result = await prisma.quiz.create({
         data: {
-          question: json.data.question,
-          variants: JSON.stringify(json.data.variants),
-          category: json.data.category,
-          isRadio: json.data.isRadio,
-          isShort: json.data.isShort,
-          answers: JSON.stringify(json.data.answers),
-          ownerEmail: json.email,
-          ownerName: json.username,
+          question: json.question,
+          variants: JSON.stringify(json.variants),
+          category: json.category,
+          isRadio: json.isRadio,
+          isShort: json.isShort,
+          answers: JSON.stringify(json.answers),
+          ownerEmail: session.user.email!,
+          ownerName: session.user.name!,
         }
       });
       return NextResponse.json(result, { status: 200 });

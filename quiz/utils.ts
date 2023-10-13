@@ -76,7 +76,11 @@ will result
 */
 Array.prototype.mapJoin = function<U, T>(callbackfn: (value: T, index: number, array: T[]) => U, callbackSep: (index: number) => U, thisArg?: any): U[] {
     if (this.length <= 1) {
-      return this;
+      if (this.length === 0) {
+        return [];
+      } else {
+        return [callbackfn(this[0], 0, this)];
+      }
     }
     const out: U[] = [];
     let idx = 0;

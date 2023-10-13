@@ -6,6 +6,7 @@ import { QuizKind, checkAnswerAsync, selectQuizIsCorrect, selectQuizKind,  selec
 import { useEffect, useRef, useState } from "react";
 import { QuizFillBlanks } from "./QuizFillBlanks";
 import { QuizSelectBlanks } from "./QuizSelectBlanks";
+import { useRouter } from "next/navigation";
 
 
 export const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -16,6 +17,7 @@ export function QuizSolve(/* { quiz }: { quiz: QuizRecord } */) {
   const quizKind = useAppSelector(selectQuizKind);
   const isCorrect = useAppSelector(selectQuizIsCorrect);
   const question = useAppSelector(selectQuizQuestion);
+  const router = useRouter();
   
 /*   // TODO need to work with add quiz
   useEffect(() => {
@@ -52,6 +54,12 @@ export function QuizSolve(/* { quiz }: { quiz: QuizRecord } */) {
     default:
       const _exhaustiveCheck: never = quizKind;
   }
+
+  function handleSubmit() {
+    dispatch(checkAnswerAsync(() => {
+      router.back();
+    }));
+  }
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -68,7 +76,7 @@ export function QuizSolve(/* { quiz }: { quiz: QuizRecord } */) {
           )}
 
 
-          <div className="flex flex-col items-start min-h-1/2 border-2 border-main-light rounded-2xl p-4">
+          <div className="flex flex-col items-center justify-start min-h-1/2 border-2 border-main-light rounded-2xl p-4">
             {quizUI}
           </div>
         </div>
@@ -76,7 +84,7 @@ export function QuizSolve(/* { quiz }: { quiz: QuizRecord } */) {
         <div className="flex justify-center">
           <button
             className="btn"
-            onClick={() => dispatch(checkAnswerAsync())}
+            onClick={handleSubmit}
           >
             Submit Answer
           </button>
@@ -98,14 +106,18 @@ function QuizFillShort() {
 
 
 
-  useEffect(() => {
+/*   useEffect(() => {
     if (typeof ref.current?.offsetWidth === "number") {
       const tmp = ref.current.offsetWidth < MIN_WIDTH ? MIN_WIDTH : ref.current.offsetWidth;
       setWidth(tmp);
     }
-  }, [userAnswer]);
+  }, [userAnswer]); */
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (typeof ref.current?.offsetWidth === "number") {
+      const tmp = ref.current.offsetWidth < MIN_WIDTH ? MIN_WIDTH : ref.current.offsetWidth;
+      setWidth(tmp);
+    }
     dispatch(setAnswer(e.target.value));
   }
 

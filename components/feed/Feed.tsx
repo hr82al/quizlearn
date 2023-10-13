@@ -2,13 +2,11 @@ import { useRouter } from "next/navigation";
 import { MaterialSymbolsAddCircleRounded } from "../Icons";
 import { useAppDispatch } from "@/redux/hooks";
 import { quizClear } from "@/redux/features/quiz/quizSlice";
-import axios from "axios";
 import { Quiz } from "@prisma/client";
 import { useEffect, useState } from "react";
 import "@/quiz/utils";
 import { Poppins } from "next/font/google";
 import { initQuiz } from "@/redux/features/quizSolveSlice/quizSolveSlice";
-import { hlog } from "../prisma";
 
 const poppinsBold = Poppins({ weight: "700", subsets: ["latin-ext"] });
 const poppinsBlack = Poppins({ weight: "900", subsets: ["latin-ext"] });
@@ -16,8 +14,14 @@ const poppinsBlack = Poppins({ weight: "900", subsets: ["latin-ext"] });
 
 export async function getQuizzes(): Promise<Quiz[]> {
   try {
-    const result = await axios.get("/api/quiz/random");
-      return result.data as Quiz[];
+    const result = await(await fetch("/api/quiz/random", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })).json();
+
+    return result as Quiz[];
   } catch (error) {
     return [] as Quiz[];
   }

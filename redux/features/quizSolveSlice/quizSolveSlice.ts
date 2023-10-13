@@ -147,7 +147,7 @@ function selectBlanksCheckAnswer(state: StateType) {
   return state.data.answers.some(answer => compareCodes(answer, userAnswer));
 }
 
-export const checkAnswerAsync = (): AppThunk =>
+export const checkAnswerAsync = (finish: () => void): AppThunk =>
   (dispatch, getState) => {
     const state = getState().quizSolve;
     if (state.isCorrect === null) {
@@ -180,7 +180,8 @@ export const checkAnswerAsync = (): AppThunk =>
     // TODO change after testing
     setTimeout(() => {
       dispatch(setIsCorrect(null));
-    }, 3000);
+      finish();
+    }, 3500);
   };
 
 function makeQuizSolve(state: StateType, quiz: QuizRecord) {

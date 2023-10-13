@@ -25,7 +25,6 @@ export default function AddQuiz() {
   const router = useRouter();
   const ref = useRef<HTMLTextAreaElement>(null);
   const quiz = useAppSelector(selectQuiz);
-  const session = useSession();
   
 
 
@@ -66,11 +65,7 @@ export default function AddQuiz() {
   }
 
   function handleSave() {
-    const email = session.data?.user.email;
-    const username = session.data?.user.name;
-    if (typeof email === "string" && typeof username === "string") {
-      dispatch(saveQuizAsync(quiz, email, username));
-    }
+    dispatch(saveQuizAsync(quiz));
   }
 
   function handlePreview(){
