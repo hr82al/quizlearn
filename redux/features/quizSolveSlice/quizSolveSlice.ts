@@ -51,8 +51,9 @@ type Piece = {
 }
 
 type StateType = {
-  id: number,
+  id?: number,
   ownerName: string,
+  ownerEmail: string,
   data:QuizRecord,
   kind: QuizKind,
   uniqueVariants: string[],
@@ -64,8 +65,9 @@ type StateType = {
 }
 
 const initialState: StateType = {
-  id: -1,
+  id: undefined,
   ownerName: "",
+  ownerEmail: "",
   data: EMPTY_QUIZ_RECORD,
   kind: QuizKind.NONE,
   uniqueVariants: [],
@@ -224,6 +226,8 @@ export const quizSolveSlice = createSlice({
       state.data.variants =  JSON.parse(quiz.variants);
       state.data.answers = JSON.parse(quiz.answers);
       state.id = quiz.id;
+      state.ownerName = quiz.ownerName;
+      state.ownerEmail = quiz.ownerEmail;
       state = makeQuizSolve(state, state.data);
     },
 
@@ -303,5 +307,10 @@ export const selectQuizUserAnswer = (state: AppState) => state.quizSolve.userAns
 export const selectQuizQuestion = (state: AppState) => state.quizSolve.data.question;
 export const selectUniqueVariants = (state: AppState) => state.quizSolve.uniqueVariants;
 export const selectQuizBlankIndexes = (state: AppState) => state.quizSolve.blankIndexes;
+export const selectQuizSolveQuiz = (state: AppState) => state.quizSolve.data;
+export const selectQuizSolveState = (state: AppState) => state.quizSolve;
+export const selectQuizSolveOwnerName = (state: AppState) => state.quizSolve.ownerName;
+export const selectQuizSolveOwnerEmail = (state: AppState) => state.quizSolve.ownerEmail;
+export const selectQuizSolveId = (state: AppState) => state.quizSolve.id;
 
 export default quizSolveSlice.reducer;

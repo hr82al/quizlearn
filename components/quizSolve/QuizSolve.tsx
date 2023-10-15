@@ -2,11 +2,12 @@ import { JetBrains_Mono } from "next/font/google";
 import Navbar from "../Navbar";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { QuizRecord} from "@/redux/features/quiz/quizSlice";
-import { QuizKind, checkAnswerAsync, selectQuizIsCorrect, selectQuizKind,  selectQuizQuestion,  selectQuizUserAnswer,  selectQuizVariants, setAnswer, setCheckboxAnswer, setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
+import { QuizKind, checkAnswerAsync, selectQuizIsCorrect, selectQuizKind,  selectQuizQuestion,  selectQuizSolveOwnerEmail,  selectQuizSolveOwnerName,  selectQuizSolveQuiz,  selectQuizUserAnswer,  selectQuizVariants, setAnswer, setCheckboxAnswer, setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
 import { useEffect, useRef, useState } from "react";
 import { QuizFillBlanks } from "./QuizFillBlanks";
 import { QuizSelectBlanks } from "./QuizSelectBlanks";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 
 export const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -81,13 +82,15 @@ export function QuizSolve(/* { quiz }: { quiz: QuizRecord } */) {
           </div>
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex gap-4 justify-center">
+        <EditQuizButton />
           <button
             className="btn"
             onClick={handleSubmit}
           >
             Submit Answer
           </button>
+          
         </div>
         {typeof isCorrect === "boolean" && <QuizResult />}
       </div>
@@ -95,6 +98,21 @@ export function QuizSolve(/* { quiz }: { quiz: QuizRecord } */) {
   )
 }
 
+function EditQuizButton() {
+  const session = useSession();
+  const ownerName = useAppSelector(selectQuizSolveOwnerName);
+  const ownerEmail = useAppSelector(selectQuizSolveOwnerEmail);
+  const isOwner = session.data?.user.name === ownerName && session.data.user.email == ownerEmail;
+  const button = isOwner ? (
+    <button
+      className="btn"
+    >
+      Edit
+    </button>
+  ) : (<></>);
+
+  return button;
+}
 
 const MIN_WIDTH = 24;
 
