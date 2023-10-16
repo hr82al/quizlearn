@@ -2,7 +2,6 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { BLANK, EMPTY_QUIZ_RECORD, QuizRecord } from "../quiz/quizSlice";
 import { AppState, AppThunk } from "@/redux/store";
 import { Quiz } from "@prisma/client";
-import { hlog } from "@/components/prisma";
  
 
 export const BLANK_RE = new RegExp("(\\.\\.\\.\\.)");

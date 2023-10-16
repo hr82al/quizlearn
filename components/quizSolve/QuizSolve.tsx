@@ -1,9 +1,19 @@
 import { JetBrains_Mono } from "next/font/google";
 import Navbar from "../Navbar";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { QuizRecord} from "@/redux/features/quiz/quizSlice";
-import { QuizKind, checkAnswerAsync, selectQuizIsCorrect, selectQuizKind,  selectQuizQuestion,  selectQuizSolveOwnerEmail,  selectQuizSolveOwnerName,  selectQuizSolveQuiz,  selectQuizUserAnswer,  selectQuizVariants, setAnswer, setCheckboxAnswer, setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
-import { useEffect, useRef, useState } from "react";
+import { 
+  QuizKind, 
+  checkAnswerAsync, 
+  selectQuizIsCorrect, 
+  selectQuizKind,  
+  selectQuizQuestion,  
+  selectQuizSolveOwnerEmail,  
+  selectQuizSolveOwnerName,    
+  selectQuizUserAnswer,  
+  selectQuizVariants, 
+  setAnswer, setCheckboxAnswer, 
+} from "@/redux/features/quizSolveSlice/quizSolveSlice";
+import { useRef, useState } from "react";
 import { QuizFillBlanks } from "./QuizFillBlanks";
 import { QuizSelectBlanks } from "./QuizSelectBlanks";
 import { useRouter } from "next/navigation";
