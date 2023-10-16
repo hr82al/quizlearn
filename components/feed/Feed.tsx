@@ -6,7 +6,7 @@ import { Quiz } from "@prisma/client";
 import { useEffect, useState } from "react";
 import "@/quiz/utils";
 import { Poppins } from "next/font/google";
-import { initQuiz } from "@/redux/features/quizSolveSlice/quizSolveSlice";
+
 
 const poppinsBold = Poppins({ weight: "700", subsets: ["latin-ext"] });
 const poppinsBlack = Poppins({ weight: "900", subsets: ["latin-ext"] });
@@ -72,8 +72,9 @@ function ShortQuiz({ quiz }: { quiz: Quiz }) {
   const router = useRouter();
 
   function handleSolveQuiz() {
-    dispatch(initQuiz(quiz));
-    router.push("/quiz");
+    // dispatch(initQuiz(quiz));
+    // router.push("/quiz");
+    router.push(`/quiz/${quiz.id}`)
   }
 
   return (

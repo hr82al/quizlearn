@@ -4,13 +4,22 @@ import { QuizFragment, QuizKind, parseQuiz } from "./quiz";
 import QuizRadio from "./QuizRadio";
 import { QuizCheckbox } from "./QuizCheckbox";
 import { QuizFill } from "./QuizFill";
-import { checkboxQuizCheckAnswer, fillBlanksQuizCheckAnswer, fillQuizCheckAnswer, fillShortQuizCheckAnswer, radioQuizCheckAnswer, selectBlanksCheckAnswer } from "./checkAnswer";
+import { 
+  checkboxQuizCheckAnswer, 
+  fillBlanksQuizCheckAnswer, 
+  fillQuizCheckAnswer, 
+  fillShortQuizCheckAnswer, 
+  radioQuizCheckAnswer, 
+  selectBlanksCheckAnswer 
+} from "./checkAnswer";
 import { QuizResult } from "./QuizResult";
 import { Actions } from "./Actions";
 import { JetBrains_Mono } from "next/font/google";
 import { QuizFillBlanks } from "./QuizFillBlanks";
 import { QuizFillShort } from "./QuizFillShort";
 import { QuizSelectBlanks } from "./QuizSelectBlanks";
+import Navbar from "../Navbar";
+import { useRouter } from "next/navigation";
 
 
 export const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
@@ -44,10 +53,7 @@ function addFragment(fragments: QuizFragment[], fragment: QuizFragment): QuizFra
   } 
 }
 
-export default function QuizID(
-  { id }: 
-  { id: number}
-) {
+export default function QuizID( { id }: { id: number } ) {
   const [ quiz, setQuiz ] = useState<Quiz | null>(null);
   const [ quizKind, setQuizKind ] = useState<QuizKind | null>(null);
   const [ quizVariants, setQuizVariants ] = useState<string[]>([]);
@@ -57,6 +63,13 @@ export default function QuizID(
   const [ isCorrect, setIsCorrect ] = useState<boolean | null>(null);
   const [ quizFragments, setQuizFragments ] = useState<QuizFragment[]>([]);
   const [ quizUniqueVariants, setQuizUniqueVariants ] = useState<string[]>([]);
+  const router = useRouter();
+
+  const question = quiz ? (
+    <pre className={`break-all whitespace-pre-wrap ${jetBrainFont.className}`}>
+      { quiz.question }
+    </pre>
+  ) : (<></>);
 
 
 
@@ -89,7 +102,7 @@ export default function QuizID(
   }
 
 
-  function checkAnswer() {
+  function handleSubmit() {
 
     if (isCorrect === null) {
       switch (quizKind) {
@@ -122,7 +135,7 @@ export default function QuizID(
     // TODO change after testing
     setTimeout(() => {
       setIsCorrect(null)
-      // finish();
+      router.back();
     }, 3500);
   }
 
@@ -205,14 +218,28 @@ export default function QuizID(
   }, [id]);
 
 
-
   return (
-    <div>
-      <h1>{JSON.stringify(quiz)}</h1>
-      {quizKind}
-      {quizUI}
-      <Actions handleSubmit={checkAnswer}/>
-      {typeof isCorrect === "boolean" && <QuizResult isCorrect={isCorrect}/>}
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <div className="flex flex-col gap-2 flex-auto main-container text-orange-200 text-lg  select-none">
+        <div className="flex-auto flex flex-col gap-8">
+
+          {quizKind !== QuizKind.NONE && quizKind !== QuizKind.FILL_BLANKS  && quizKind !== QuizKind.SELECT_BLANKS && quiz !== null && quiz.question.trim().length > 0 && (
+            <div className={`border-2 border-main-light p-4 rounded-2xl`} >
+              <pre className={`break-all whitespace-pre-wrap ${jetBrainFont.className}`}>
+                {question}
+              </pre>
+            </div>
+          )}
+
+
+          <div className="flex flex-col flex-auto items-center justify-start min-h-1/2 border-2 border-main-light rounded-2xl p-4">
+            {quizUI}
+          </div>
+        </div>
+        <Actions handleSubmit={handleSubmit} />
+        {typeof isCorrect === "boolean" && <QuizResult isCorrect={isCorrect} />}
+      </div>
     </div>
   );
 }
