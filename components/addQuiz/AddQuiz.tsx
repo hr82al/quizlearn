@@ -1,6 +1,6 @@
 import { JetBrains_Mono } from "next/font/google";
 import Navbar from "../Navbar";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { splitToItems } from "@/quiz/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { 
@@ -9,6 +9,7 @@ import {
   ScreensKind, 
   addItem, 
   addItems, 
+  init, 
   nextScreen, 
   properties, 
   propertyIsScreenKind, 
@@ -100,6 +101,7 @@ export default function AddQuiz(
 
   function handleSave() {
     dispatch(saveQuizAsync(quizRecord));
+    router.back();
   }
 
   function handlePreview() {
@@ -123,6 +125,13 @@ export default function AddQuiz(
       setScreen(QuizScreen.DO_NEW);
     }
   }
+
+  useEffect(() => {
+    if (quiz) {
+      dispatch(init(quiz));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quiz]);
 
   return (
     <div className="flex flex-col h-screen">
@@ -265,7 +274,7 @@ function Menu() {
           property={i as QuizRecordProperty} 
         />
       );
-    } else if (!propertyIsScreenKind(i, ScreensKind.CATEGORY)) {
+    } else if (!(propertyIsScreenKind(i, ScreensKind.CATEGORY) || propertyIsScreenKind(i, ScreensKind.NONE))) {
       return (
         <InputRadio
           className={className}

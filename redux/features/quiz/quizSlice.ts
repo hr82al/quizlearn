@@ -1,5 +1,5 @@
 import { AppState, AppThunk } from "@/redux/store";
-import { CategoryEnum } from "@prisma/client";
+import { CategoryEnum, Quiz } from "@prisma/client";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 
@@ -11,6 +11,7 @@ function isStringList(obj: object): obj is string[] {
 }
 
 export interface QuizRecord {
+  id: number;
   question: string;
   variants: string[];
   isRadio: boolean;
@@ -20,6 +21,7 @@ export interface QuizRecord {
 }
 
 export const EMPTY_QUIZ_RECORD: QuizRecord = {
+  id: 0,
   question: "",
   variants: [],
   isRadio: true,
@@ -29,8 +31,8 @@ export const EMPTY_QUIZ_RECORD: QuizRecord = {
 };
 
 const CAPTIONS = {
+  id: "id",
   question: "Question",
-  body: "Body",
   variants: "Variants",
   isRadio: "Is Radio",
   isShort: "Is Short",
@@ -54,10 +56,12 @@ export const enum ScreensKind {
   LIST = "LIST",
   CHECKBOX = "CHECKBOX",
   IS_RADIO = "IS_RADIO",
-  CATEGORY = "CATEGORY"
+  CATEGORY = "CATEGORY",
+  NONE = "NONE"
 }
 
 export enum UIEnum {
+  id = ScreensKind.NONE,
   question = ScreensKind.TEXT,
   variants = ScreensKind.LIST,
   isRadio = ScreensKind.CHECKBOX,
@@ -143,7 +147,7 @@ const initialState: InitialState = {
 }
 
 // convert object to text
-function toText(obj: string | boolean | string[] ) {
+function toText(obj: string | number | boolean | string[] ) {
   let text: string;
   if (typeof obj !== "string") {
     text = JSON.stringify(obj);
@@ -183,16 +187,26 @@ export const saveScreen = (): AppThunk =>
     dispatch(setScreen(property));
   }
 
-export const saveQuizAsync = (quiz: QuizRecord): AppThunk => 
-  async (dispatch) => {
-    dispatch(saveScreen());
-    await fetch("/api/quiz/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(quiz),
-    });
+export const saveQuizAsync = (quiz: QuizRecord): AppThunk =>
+  async (dispatch, getState) => {
+    dispatch(saveText());
+    if (getState().quiz.data.id == 0) {
+      await fetch("/api/quiz/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(quiz),
+      });
+    } else {
+      await fetch("/api/quiz/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(quiz),
+      });
+    }
   }
 
 
@@ -200,6 +214,19 @@ export const quizSlice = createSlice({
   name: "quiz",
   initialState,
   reducers: {
+    init: (state, { payload }: PayloadAction<Quiz>) => {
+      const quiz = payload;
+      state.data.question = quiz.question;
+      state.data.variants = JSON.parse(quiz.variants);
+      state.data.answers = JSON.parse(quiz.answers);
+      state.data.isRadio = quiz.isRadio;
+      state.data.isShort = quiz.isShort;
+      state.data.category = quiz.category;
+      state.property = "question";
+      state.text = quiz.question;
+      state.data.id = quiz.id;
+    },
+
     toNextProperty: (state) => {
       const idx = (properties.indexOf(state.property) + 1) % LENGTH;
       state.property = properties[idx] as keyof QuizRecord;
@@ -299,6 +326,7 @@ export const {
   setCheckbox, 
   quizClear,
   setQuizCategory,
+  init,
 } = quizSlice.actions;
 
 export default quizSlice.reducer;

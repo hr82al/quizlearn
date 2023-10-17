@@ -129,7 +129,6 @@ export default function QuizID(
       } 
     }
 
-    // TODO change after testing
     setTimeout(() => {
       setIsCorrect(null);
       if (screen === QuizScreen.DO_NEW) {
@@ -138,6 +137,16 @@ export default function QuizID(
         router.back();
       }
     }, 3500);
+  }
+
+  function handleEdit() {
+    setScreen(QuizScreen.ADD);
+  }
+
+  async function handleDelete() {
+
+    await fetch(`/api/quiz/delete/${quiz.id}`);
+    router.push("/");
   }
 
 
@@ -228,7 +237,7 @@ export default function QuizID(
             {quizUI}
           </div>
         </div>
-        <Actions handleSubmit={handleSubmit} />
+        <Actions quiz={ quiz } handleSubmit={ handleSubmit } handleEdit={ handleEdit } handleDelete={ handleDelete } />
         {typeof isCorrect === "boolean" && <QuizResult isCorrect={isCorrect} />}
       </div>
     </div>

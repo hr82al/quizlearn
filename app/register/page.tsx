@@ -3,7 +3,7 @@
 import { ChangeEvent, MouseEventHandler, useEffect, useState } from "react";
 import { hashSync } from "bcrypt-ts";
 import { signIn } from "next-auth/react";
-import { hlog } from "@/components/prisma";
+
 
 export default function Register() {
   const [user, setUser] = useState("");

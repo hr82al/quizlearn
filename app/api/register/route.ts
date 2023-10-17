@@ -28,6 +28,6 @@ export async function POST(request: Request) {
     }
     return NextResponse.json({error: "Wrong request format"}, { status: 500});
   } catch (error) {
-    return NextResponse.json(error, { status: 500});
+    return NextResponse.json({ error: (error as Error).message }, { status: 500});
   }
 }

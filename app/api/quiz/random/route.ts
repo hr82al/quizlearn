@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       
       return NextResponse.json({ error: `Unknown request`, request: json}, { status: 500 });
     } catch (error) {
-      return NextResponse.json({ error }, { status: 500});
+      return NextResponse.json({ error: (error as Error).message }, { status: 500});
     }
   }
 
@@ -48,6 +48,6 @@ export async function POST(request: Request) {
         const result = await prisma.$queryRawUnsafe<Quiz[]>(query);
         return NextResponse.json(result, { status: 200 });
     } catch (error) {
-      return NextResponse.json({ error }, { status: 500});
+      return NextResponse.json({ error: (error as Error).message }, { status: 500});
     }
   }

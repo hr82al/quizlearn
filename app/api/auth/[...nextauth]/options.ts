@@ -3,7 +3,7 @@ import { compareSync } from "bcrypt-ts"
 import { decode } from "base32"
 import GoogleProvider from "next-auth/providers/google"
 import { AdapterUser } from "next-auth/adapters";
-import { hlog, prisma } from "@/components/prisma";
+import { prisma } from "@/components/prisma";
 import { Account, NextAuthOptions, Profile, User } from "next-auth";
 import { getUser } from "@/quiz/utils";
 

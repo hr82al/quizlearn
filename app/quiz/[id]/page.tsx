@@ -14,7 +14,6 @@ async function getQuizById(id: number): Promise<Quiz | null> {
       const result = await(await fetch(`/api/quiz/${id}`)).json();
       return result;
     }catch (error) {
-      console.log(error);
       return null;
     }
   } 

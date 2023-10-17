@@ -14,7 +14,7 @@ async function runProtectByUserId(fn: (userId: number) => Promise<ResultT>) {
       const result = await fn(userId);
       return NextResponse.json(result, { status: 200 });
     } catch (error) {
-      return NextResponse.json({ error }, { status: 500 });
+      return NextResponse.json({ error: (error as Error).message }, { status: 500 });
     }
   } else {
     return NextResponse.json("You must login to view the protected content.", { status: 500 });

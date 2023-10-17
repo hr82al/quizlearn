@@ -27,7 +27,6 @@ export default function Navbar({ children }: { children?: React.ReactNode}) {
             </>
           ) : (
             <>
-              <Link href="/register">Register</Link>
               <Link href="#" onClick={() => signIn()}>Login</Link>
             </>
           )}
