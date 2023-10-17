@@ -9,6 +9,12 @@ export interface QuizFragment {
   isBlank: boolean;
 }
 
+export const enum QuizScreen {
+  DO,
+  ADD,
+  DO_NEW,
+}
+
 
 export const enum QuizKind {
   // A kind is not detected yet or the data is bad

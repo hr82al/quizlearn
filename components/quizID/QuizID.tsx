@@ -1,6 +1,6 @@
 import { Quiz } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { QuizFragment, QuizKind, parseQuiz } from "./quiz";
+import { QuizFragment, QuizKind, QuizScreen, parseQuiz } from "./quiz";
 import QuizRadio from "./QuizRadio";
 import { QuizCheckbox } from "./QuizCheckbox";
 import { QuizFill } from "./QuizFill";
@@ -26,18 +26,6 @@ export const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
 export type FillHandler = ( index: number, text: string ) => void
 
 
-async function getQuizById(id: number): Promise<Quiz | null> {
-  if (isFinite(id)) {
-    try {
-      const result = await(await fetch(`/api/quiz/${id}`)).json();
-      return result;
-    }catch (error) {
-      console.log(error);
-      return null;
-    }
-  } 
-  return null;
-}
 
 function getWithSpaces(variants: string[], selected: string[], trimmed: string): string {
   const index = selected.filter(i => i.trim() === trimmed).length;
@@ -53,8 +41,17 @@ function addFragment(fragments: QuizFragment[], fragment: QuizFragment): QuizFra
   } 
 }
 
-export default function QuizID( { id }: { id: number } ) {
-  const [ quiz, setQuiz ] = useState<Quiz | null>(null);
+export default function QuizID( 
+  { 
+    setScreen,
+    quiz,
+    screen,
+  }: {
+   setScreen: (screen: QuizScreen) => void,
+   quiz: Quiz,
+   screen: QuizScreen,
+  } 
+) {
   const [ quizKind, setQuizKind ] = useState<QuizKind | null>(null);
   const [ quizVariants, setQuizVariants ] = useState<string[]>([]);
   const [ userAnswer, setUserAnswer ] = useState("");
@@ -134,8 +131,12 @@ export default function QuizID( { id }: { id: number } ) {
 
     // TODO change after testing
     setTimeout(() => {
-      setIsCorrect(null)
-      router.back();
+      setIsCorrect(null);
+      if (screen === QuizScreen.DO_NEW) {
+        setScreen(QuizScreen.ADD)
+      } else {
+        router.back();
+      }
     }, 3500);
   }
 
@@ -198,24 +199,14 @@ export default function QuizID( { id }: { id: number } ) {
 
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const quiz = await getQuizById(id);
-        if (quiz !== null && "id" in quiz) {
-          setQuiz(quiz);
-          const parsedQuiz = parseQuiz(quiz);
-          setQuizKind(parsedQuiz.kind);
-          setQuizVariants(parsedQuiz.quizVariants);
-          setQuizAnswers(parsedQuiz.quizAnswers);
-          setQuizFragments(parsedQuiz.quizFragments);
-          setQuizUniqueVariants(parsedQuiz.quizUniqueVariants);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchData();
-  }, [id]);
+    const parsedQuiz = parseQuiz(quiz);
+    setQuizKind(parsedQuiz.kind);
+    setQuizVariants(parsedQuiz.quizVariants);
+    setQuizAnswers(parsedQuiz.quizAnswers);
+    setQuizFragments(parsedQuiz.quizFragments);
+    setQuizUniqueVariants(parsedQuiz.quizUniqueVariants);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quiz.id]);
 
 
   return (

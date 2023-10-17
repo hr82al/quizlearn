@@ -34,7 +34,8 @@ export default function Feed() {
 
   function handleAdd() {
     dispatch(quizClear());
-    router.push("/add-quiz");
+    // router.push("/add-quiz");
+    router.push("/quiz/0")
   }
 
   useEffect(() => {

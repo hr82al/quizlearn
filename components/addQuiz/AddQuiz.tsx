@@ -3,18 +3,51 @@ import Navbar from "../Navbar";
 import React, { useRef, useState } from "react";
 import { splitToItems } from "@/quiz/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { BLANK, QuizRecordProperty, ScreensKind, addItem, addItems, nextScreen, properties, propertyIsScreenKind, propertyTyCaption, saveQuizAsync, saveScreen, selectIsReady, selectQuiz, selectQuizCategory, selectQuizListItem, selectQuizProperty, selectQuizText, setCheckbox, setListItem, setQuizCategory, setScreen, setText } from "@/redux/features/quiz/quizSlice";
+import { 
+  BLANK, 
+  QuizRecordProperty, 
+  ScreensKind, 
+  addItem, 
+  addItems, 
+  nextScreen, 
+  properties, 
+  propertyIsScreenKind, 
+  propertyTyCaption, 
+  saveQuizAsync, 
+  saveScreen, 
+  selectIsReady, 
+  selectQuiz, 
+  selectQuizCategory, 
+  selectQuizListItem, 
+  selectQuizProperty, 
+  selectQuizText, 
+  setCheckbox, 
+  setListItem, 
+  setQuizCategory, 
+  setScreen, 
+  setText,
+} from "@/redux/features/quiz/quizSlice";
 import { useRouter } from "next/navigation";
 import Category from "../category/Category";
-import { CategoryEnum } from "@prisma/client";
+import { CategoryEnum, Quiz } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import { setQuizSolve } from "@/redux/features/quizSolveSlice/quizSolveSlice";
+import { QuizScreen } from "../quizID/quiz";
 
 
 const jetBrainFont = JetBrains_Mono({ subsets: ["cyrillic-ext"] });
 
 
-export default function AddQuiz() {
+export default function AddQuiz(
+  {
+    setScreen,
+    quiz,
+    setQuiz,
+  } : {
+    setScreen: (screen: QuizScreen) => void,
+    quiz: Quiz | null,
+    setQuiz: (quiz: Quiz) => void,
+  }
+) {
   const dispatch = useAppDispatch();
   const text = useAppSelector(selectQuizText);
   const property = useAppSelector(selectQuizProperty);
@@ -24,7 +57,8 @@ export default function AddQuiz() {
   const isReady = useAppSelector(selectIsReady);
   const router = useRouter();
   const ref = useRef<HTMLTextAreaElement>(null);
-  const quiz = useAppSelector(selectQuiz);
+  const quizRecord = useAppSelector(selectQuiz);
+  const session = useSession();
   
 
 
@@ -65,13 +99,29 @@ export default function AddQuiz() {
   }
 
   function handleSave() {
-    dispatch(saveQuizAsync(quiz));
+    dispatch(saveQuizAsync(quizRecord));
   }
 
-  function handlePreview(){
-    dispatch(saveScreen());
-    dispatch(setQuizSolve(quiz));
-    router.push("/quiz");
+  function handlePreview() {
+    // dispatch(saveScreen());
+    // dispatch(setQuizSolve(quizRecord));
+    // router.push("/quiz");
+    if (session.data && session.data.user && session.data.user.name && session.data.user.email) {
+      setQuiz(
+        {
+          id: 0,
+          question: quizRecord.question,
+          variants: JSON.stringify(quizRecord.variants),
+          isRadio: quizRecord.isRadio,
+          isShort: quizRecord.isShort,
+          answers: JSON.stringify(quizRecord.answers),
+          category: quizRecord.category,
+          ownerName: session.data.user.name,
+          ownerEmail: session.data.user.email,
+        }
+      );
+      setScreen(QuizScreen.DO_NEW);
+    }
   }
 
   return (
