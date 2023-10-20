@@ -39,7 +39,7 @@
   }
 
   .btn {
-    @apply px-6 py-2 text-sm shadow-md shadow-gray-700 bg-main-darkest rounded-xl hover:bg-violet-900 disabled:bg-gray-700 outline-none focus:bg-teal-900
+    @apply px-6 py-2 text-sm shadow-md shadow-gray-700 bg-main-darkest rounded-xl hover:bg-violet-900 disabled:bg-gray-700 outline-none focus:bg-teal-900 text-orange-200
   }
 
   .btn:active {
